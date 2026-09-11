@@ -1,5 +1,12 @@
 const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
+const RMGreen = '#97ce4c';
+const RMPink = '#e89ac7';
+const RMYellow = '#f0e14a';
+const RMBrown = '#1e0c0c';
+const RMGray = '#89847e';
+const RMRed = '#e10f0f';
+
 
 export default {
   light: {
