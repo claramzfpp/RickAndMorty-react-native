@@ -2,13 +2,21 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/components/useColorScheme';
 
-export default function TabOneScreen() {
+export default function TabTwoScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+    <View style={[styles.container, { backgroundColor: colors.gray }]}>
+
+      <Text style={styles.title}>Tab Two</Text>
+
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+
+      <EditScreenInfo path="app/(tabs)/two.tsx" />
     </View>
   );
 }

@@ -2,15 +2,19 @@ import { StyleSheet } from 'react-native';
 
 import { ExternalLink } from './ExternalLink';
 import { MonoText } from './StyledText';
+// mesma energia do kotlin de importar as componentes//funções necessárias
+// invés de importar a biblioteca toda
 import { Text, View } from './Themed';
-
 import Colors from '@/constants/Colors';
 
 export default function EditScreenInfo({ path }: { path: string }) {
   return (
-    <View>
+    // basicamente um container que agrupa os elementos filhos
+    <View> 
       <View style={styles.getStartedContainer}>
+
         <Text
+        //style é igual o modifier no kotlin/swift, ele altera a aparência do componente
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
           darkColor="rgba(255,255,255,0.8)">
@@ -61,6 +65,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 24,
     textAlign: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
   },
   helpContainer: {
     marginTop: 15,

@@ -1,19 +1,38 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+const RMGreen = '#97ce4c';
+const RMPink = '#e89ac7';
+const RMYellow = '#f0e14a';
+const RMBrown = '#1e0c0c';
+const RMGray = '#89847e';
+const RMRed = '#e10f0f';
+
 
 export default {
   light: {
     text: '#000',
     background: '#fff',
-    tint: tintColorLight,
+    tint: RMBrown,
     tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
+    tabIconSelected: RMGreen,
+    tabBarSelectedBackground: RMGreen,
+    gray: RMGray,
+    green: RMGreen,
+    pink: RMPink,
+    yellow: RMYellow,
+    red: RMRed,
+    brown: RMBrown,
   },
   dark: {
     text: '#fff',
     background: '#000',
-    tint: tintColorDark,
+    tint: RMRed,
     tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: RMPink,
+    tabBarSelectedBackground: RMGreen,
+    gray: RMGray,
+    green: RMGreen,
+    pink: RMPink,
+    yellow: RMYellow,
+    red: RMRed,
+    brown: RMBrown,
   },
 };
