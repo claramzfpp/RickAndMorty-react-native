@@ -25,7 +25,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
 
   // calculando a largura da barra e a largura de cada item (aba) com base no número de rotas
   const barWidth = width - BAR_HORIZONTAL_MARGIN * 5;
-  const itemWidth = (barWidth - PILL_INSET * 3) / state.routes.length;
+  const itemWidth = (barWidth - PILL_INSET * 2) / state.routes.length;
 
   // usando o hook useSharedValue do Reanimated para criar 
   // uma variável animada que representa a posição do "pill" (indicador de seleção) com 

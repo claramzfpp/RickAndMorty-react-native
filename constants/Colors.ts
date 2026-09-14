@@ -1,5 +1,3 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
 const RMGreen = '#97ce4c';
 const RMPink = '#e89ac7';
 const RMYellow = '#f0e14a';
@@ -16,6 +14,12 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: RMGreen,
     tabBarSelectedBackground: RMGreen,
+    gray: RMGray,
+    green: RMGreen,
+    pink: RMPink,
+    yellow: RMYellow,
+    red: RMRed,
+    brown: RMBrown,
   },
   dark: {
     text: '#fff',
@@ -24,5 +28,11 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: RMPink,
     tabBarSelectedBackground: RMGreen,
+    gray: RMGray,
+    green: RMGreen,
+    pink: RMPink,
+    yellow: RMYellow,
+    red: RMRed,
+    brown: RMBrown,
   },
 };

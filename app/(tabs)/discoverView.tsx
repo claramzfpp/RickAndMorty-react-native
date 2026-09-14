@@ -2,11 +2,16 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/components/useColorScheme';
 
 export default function TabOneScreen() {
-  return (
-    <View style={styles.container}>
+  // pegando o esquema de cores atual (claro ou escuro) e as cores correspondentes do arquivo Colors.ts
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
 
+  return (
+    <View style={[styles.container, { backgroundColor: colors.gray }]}>
       <Text style={styles.title}>Title</Text> 
 
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
