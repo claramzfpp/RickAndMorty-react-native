@@ -8,22 +8,28 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
 
-const BAR_HEIGHT = 44;
+// definindo constantes para o tamanho da barra, margens e espaçamento do "pill" (indicador de seleção)
+const BAR_HEIGHT = 54;
 const BAR_HORIZONTAL_MARGIN = 54;
 const BAR_BOTTOM_MARGIN = 24;
 const PILL_INSET = 6;
 
-export default function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  //pegando o esquema de cores atual (claro ou escuro) e as cores correspondentes do arquivo Colors.ts
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
   const { width } = useWindowDimensions();
 
+  // calculando a largura da barra e a largura de cada item (aba) com base no número de rotas
   const barWidth = width - BAR_HORIZONTAL_MARGIN * 5;
-  const itemWidth = (barWidth - PILL_INSET * 6) / state.routes.length;
+  const itemWidth = (barWidth - PILL_INSET * 3) / state.routes.length;
 
+  // usando o hook useSharedValue do Reanimated para criar 
+  // uma variável animada que representa a posição do "pill" (indicador de seleção) com 
+  // base no índice da aba selecionada
   const pillOffset = useSharedValue(state.index * itemWidth);
 
   useEffect(() => {
@@ -106,8 +112,6 @@ const styles = StyleSheet.create({
   blur: {
     borderRadius: BAR_HEIGHT / 2,
     overflow: 'hidden',
-    borderWidth: 10,
-    borderColor: 'rgba(15, 0, 0, 0)',
   },
   track: {
     flexDirection: 'row',
