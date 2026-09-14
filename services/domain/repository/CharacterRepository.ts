@@ -2,9 +2,10 @@ import { Character } from '../model/Character';
 
 export interface CharacterRepository {
     characters: Character[];
-    // returns a character or undefined if no character matches the provided id
-    getCharacterById(id: number): Character | undefined;
-    getAllCharacters(): Character[];
-    // returns a list of characters or undefined if no character matches the provided name
-    searchCharactersByName(name: string): Character[] | undefined;
+    hasNextPage: boolean;
+    loadNextPage(): Promise<void>;
+    // resolves to an empty list if no character matches the provided name
+    searchCharacters(name: string): Promise<Character[]>;
+    // rejects if no character matches the provided id
+    getCharacterById(id: number): Promise<Character>;
 }
