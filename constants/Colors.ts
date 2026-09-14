@@ -12,15 +12,17 @@ export default {
   light: {
     text: '#000',
     background: '#fff',
-    tint: tintColorLight,
+    tint: RMBrown,
     tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
+    tabIconSelected: RMGreen,
+    tabBarSelectedBackground: RMGreen,
   },
   dark: {
     text: '#fff',
     background: '#000',
-    tint: tintColorDark,
+    tint: RMRed,
     tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: RMPink,
+    tabBarSelectedBackground: RMGreen,
   },
 };
