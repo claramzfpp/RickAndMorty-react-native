@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
-import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { Character } from '@/services/domain/model/Character';
+import Colors from '@/constants/Colors';
 import { CharacterRepositoryImpl } from '@/services/data/repositoryImplementation/CharacterRepositoryImpl';
+import { EpisodeRepositoryImpl } from '@/services/data/repositoryImplementation/EpisodeRepositoryImpl';
+import { Character } from '@/services/domain/model/Character';
+import { Episode } from '@/services/domain/model/Episode';
 
 const characterRepository = new CharacterRepositoryImpl();
+const episodeRepository = new EpisodeRepositoryImpl();
 
 export default function DiscoverView() {
   // pegando o esquema de cores atual (claro ou escuro) e as cores correspondentes do arquivo Colors.ts
@@ -17,11 +20,16 @@ export default function DiscoverView() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+
   useEffect(() => {
-    characterRepository
-      .loadNextPage()
-      .then(() => setCharacters(characterRepository.characters))
-      .catch(() => setError('Falha ao carregar personagens'));
+    episodeRepository
+      .loadAllEpisodes()
+      .then(() => setEpisodes(episodeRepository.getEpisodesBySeason(1)))
+      .catch((e) => {
+        console.error('Falha ao carregar episódios', e);
+        setError('Falha ao carregar episódios');
+      });
   }, []);
 
   return (
@@ -30,7 +38,7 @@ export default function DiscoverView() {
 
       <FlatList
         style={styles.list}
-        data={characters}
+        data={episodes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <Text style={styles.item}>{item.name}</Text>}
       />
