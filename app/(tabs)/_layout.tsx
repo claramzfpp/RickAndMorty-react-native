@@ -14,7 +14,7 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="discoverView"
+        name="index"
         options={{
           title: 'Discover',
           tabBarIcon: ({ color }) => (
