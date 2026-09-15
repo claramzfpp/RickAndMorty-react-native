@@ -1,4 +1,5 @@
 import { Episode } from '@/services/domain/model/Episode';
+import { EpisodeId } from '@/services/domain/model/EpisodeId';
 import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
 import { EpisodeMapper } from '@/services/data/mapper/EpisodeMapper';
 import { GetAllEpisodesResponse } from '@/services/data/remote/episodes/GetAllEpisodesResponse';
@@ -26,8 +27,8 @@ export class EpisodeRepositoryImpl implements EpisodeRepository {
         return counts;
     }
 
-    getEpisodeById(id: number): Episode | undefined {
-        return this.episodes.find(episode => episode.id === id);
+    getEpisodeById(id: EpisodeId): Episode | undefined {
+        return this.episodes.find(episode => episode.id.equals(id));
     }
 
     searchEpisodesByName(name: string): Episode[] {

@@ -1,4 +1,5 @@
 import { Episode } from '../model/Episode';
+import { EpisodeId } from '../model/EpisodeId';
 
 export interface EpisodeRepository {
     episodes: Episode[];
@@ -6,7 +7,7 @@ export interface EpisodeRepository {
     getEpisodesBySeason(season: number): Episode[];
     getEpisodeCountsBySeason(): { [season: number]: number };
     // looks up within the already-loaded episodes; call loadAllEpisodes() first
-    getEpisodeById(id: number): Episode | undefined;
+    getEpisodeById(id: EpisodeId): Episode | undefined;
     // looks up within the already-loaded episodes; call loadAllEpisodes() first
     searchEpisodesByName(name: string): Episode[];
 }

@@ -1,4 +1,5 @@
 import { Character } from '../../domain/model/Character';
+import { CharacterId } from '../../domain/model/CharacterId';
 import { CharacterRepository } from '../../domain/repository/CharacterRepository';
 import { CharacterMapper } from '../mapper/CharacterMapper';
 import { RMCharacter } from '../remote/characters/RMCharacter';
@@ -57,8 +58,8 @@ export class CharacterRepositoryImpl implements CharacterRepository {
             });
     }
 
-    getCharacterById(id: number): Promise<Character> {
-        const url = `${CharacterRepositoryImpl.baseUrl}/${id}`;
+    getCharacterById(id: CharacterId): Promise<Character> {
+        const url = `${CharacterRepositoryImpl.baseUrl}/${id.value}`;
 
         return fetch(url)
             .then(response => {

@@ -1,4 +1,5 @@
 import { Location } from '@/services/domain/model/Location';
+import { LocationId } from '@/services/domain/model/LocationId';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
 import { LocationMapper } from '@/services/data/mapper/LocationMapper';
 import { RMLocation } from '@/services/data/remote/locations/RMLocation';
@@ -57,8 +58,8 @@ export class LocationRepositoryImpl implements LocationRepository {
             });
     }
 
-    getLocationById(id: number): Promise<Location> {
-        const url = `${LocationRepositoryImpl.baseUrl}/${id}`;
+    getLocationById(id: LocationId): Promise<Location> {
+        const url = `${LocationRepositoryImpl.baseUrl}/${id.value}`;
 
         return fetch(url)
             .then(response => {

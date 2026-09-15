@@ -1,4 +1,5 @@
 import { Episode } from '../../domain/model/Episode';
+import { EpisodeId } from '../../domain/model/EpisodeId';
 import { RMEpisode } from '../remote/episodes/RMEpisode';
 
 export class EpisodeMapper {
@@ -8,7 +9,7 @@ export class EpisodeMapper {
         const [season, episodeNumber] = this.parseSeasonAndEpisode(rmEpisode.episode);
 
         return {
-            id: rmEpisode.id,
+            id: new EpisodeId(rmEpisode.id),
             name: rmEpisode.name,
             airDate: rmEpisode.air_date,
             episodeCode: rmEpisode.episode,

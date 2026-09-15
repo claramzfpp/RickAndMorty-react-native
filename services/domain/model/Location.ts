@@ -1,5 +1,7 @@
+import { LocationId } from './LocationId';
+
 export interface Location {
-    id: number;
+    id: LocationId;
     name: string;
     type: string;
     dimension: string;

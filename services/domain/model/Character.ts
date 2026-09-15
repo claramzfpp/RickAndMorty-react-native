@@ -1,5 +1,7 @@
+import { CharacterId } from './CharacterId';
+
 export interface Character { // 'data class'/'struct' mapeado
-    id: number;          // 'Int' vira 'number'
+    id: CharacterId;
     name: string;
     status: string;
     origin: string;
