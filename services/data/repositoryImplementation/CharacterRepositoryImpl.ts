@@ -4,9 +4,10 @@ import { CharacterMapper } from '../mapper/CharacterMapper';
 import { RMCharacter } from '../remote/characters/RMCharacter';
 import { GetAllCharactersResponse } from '../remote/characters/GetAllCharactersResponse';
 import { HttpError } from '../remote/HttpError';
+import { RICK_AND_MORTY_BASE_URL } from '../remote/ApiConfig';
 
 export class CharacterRepositoryImpl implements CharacterRepository {
-    private static readonly baseUrl = 'https://rickandmortyapi.com/api/character';
+    private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/character`;
 
     private nextUrl: string | null = CharacterRepositoryImpl.baseUrl;
 
@@ -31,7 +32,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 this.nextUrl = data.info.next;
                 this.hasNextPage = data.info.next !== null;
 
-                this.characters = this.characters.concat(data.results.map(CharacterMapper.toCharacter));
+                this.characters = this.characters.concat(data.results.map(CharacterMapper.toDomain));
             });
     }
 
@@ -52,7 +53,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 if (data === null) {
                     return [];
                 }
-                return data.results.map(CharacterMapper.toCharacter);
+                return data.results.map(CharacterMapper.toDomain);
             });
     }
 
@@ -66,6 +67,6 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 }
                 return response.json() as Promise<RMCharacter>;
             })
-            .then(CharacterMapper.toCharacter);
+            .then(CharacterMapper.toDomain);
     }
 }

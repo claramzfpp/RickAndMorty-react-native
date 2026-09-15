@@ -3,9 +3,10 @@ import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepositor
 import { EpisodeMapper } from '@/services/data/mapper/EpisodeMapper';
 import { GetAllEpisodesResponse } from '@/services/data/remote/episodes/GetAllEpisodesResponse';
 import { HttpError } from '@/services/data/remote/HttpError';
+import { RICK_AND_MORTY_BASE_URL } from '@/services/data/remote/ApiConfig';
 
 export class EpisodeRepositoryImpl implements EpisodeRepository {
-    private static readonly baseUrl = 'https://rickandmortyapi.com/api/episode';
+    private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/episode`;
 
     episodes: Episode[] = [];
 

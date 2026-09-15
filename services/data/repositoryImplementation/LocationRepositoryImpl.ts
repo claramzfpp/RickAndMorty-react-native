@@ -3,9 +3,10 @@ import { LocationRepository } from '@/services/domain/repository/LocationReposit
 import { LocationMapper } from '@/services/data/mapper/LocationMapper';
 import { GetAllLocationsResponse } from '@/services/data/remote/locations/GetAllLocationsResponse';
 import { HttpError } from '@/services/data/remote/HttpError';
+import { RICK_AND_MORTY_BASE_URL } from '@/services/data/remote/ApiConfig';
 
 export class LocationRepositoryImpl implements LocationRepository {
-    private static readonly baseUrl = 'https://rickandmortyapi.com/api/location';
+    private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/location`;
 
     locations: Location[] = [];
 
