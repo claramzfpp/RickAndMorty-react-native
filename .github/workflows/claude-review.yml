@@ -6,15 +6,20 @@
 # via branch protection settings (that change is manual, in GitHub repo
 # settings, and is out of scope for this file).
 #
-# SETUP REQUIRED: add ANTHROPIC_API_KEY as a repository secret
+# SETUP REQUIRED: add FUELIX_API_KEY as a repository secret
 # (Settings -> Secrets and variables -> Actions) before this workflow can
-# actually call Claude. Until that secret exists, the review step below
-# will fail.
+# actually call Claude. This repo authenticates through the company's
+# Fuel iX gateway (https://docs.fuelix.ai/docs/claude-code) rather than a
+# direct Anthropic API key, so the key must come from
+# https://developer.fuelix.ai, not console.anthropic.com. Until the
+# secret exists, the review step below will fail.
 #
 # Verified against anthropics/claude-code-action's action.yml (2026-09):
 # the review prompt is passed via the `prompt` input, which — unlike the
 # action's default @mention/label trigger mode — runs immediately with no
-# trigger phrase required.
+# trigger phrase required. Custom gateway routing uses the `settings`
+# input's `env` block (the documented way to pass ANTHROPIC_BASE_URL /
+# ANTHROPIC_AUTH_TOKEN through to the underlying Claude Code CLI).
 
 name: Claude Code Reviewer
 
@@ -72,6 +77,14 @@ jobs:
         if: steps.diff-size.outputs.skip != 'true'
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ steps.load-prompt.outputs.content }}
+          # Routed through the Fuel iX gateway (company account) instead of
+          # a direct Anthropic API key — see docs.fuelix.ai/docs/claude-code.
+          settings: |
+            {
+              "env": {
+                "ANTHROPIC_BASE_URL": "https://api.fuelix.ai",
+                "ANTHROPIC_AUTH_TOKEN": "${{ secrets.FUELIX_API_KEY }}"
+              }
+            }
