@@ -17,9 +17,14 @@
 # Verified against anthropics/claude-code-action's action.yml (2026-09):
 # the review prompt is passed via the `prompt` input, which — unlike the
 # action's default @mention/label trigger mode — runs immediately with no
-# trigger phrase required. Custom gateway routing uses the `settings`
-# input's `env` block (the documented way to pass ANTHROPIC_BASE_URL /
-# ANTHROPIC_AUTH_TOKEN through to the underlying Claude Code CLI).
+# trigger phrase required.
+#
+# Gateway routing: the action itself runs a pre-flight check that requires
+# ANTHROPIC_API_KEY (or an OAuth token / workload identity federation) to
+# be set, independently of whatever the underlying Claude Code CLI is
+# told to use — so FUELIX_API_KEY is passed as ANTHROPIC_API_KEY to
+# satisfy that check, with ANTHROPIC_BASE_URL pointing the CLI at the
+# Fuel iX gateway for the actual API calls.
 
 name: Claude Code Reviewer
 
@@ -79,12 +84,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ steps.load-prompt.outputs.content }}
-          # Routed through the Fuel iX gateway (company account) instead of
-          # a direct Anthropic API key — see docs.fuelix.ai/docs/claude-code.
-          settings: |
-            {
-              "env": {
-                "ANTHROPIC_BASE_URL": "https://api.fuelix.ai",
-                "ANTHROPIC_AUTH_TOKEN": "${{ secrets.FUELIX_API_KEY }}"
-              }
-            }
+        env:
+          # Routed through the company's Fuel iX gateway instead of a
+          # direct Anthropic API key — see docs.fuelix.ai/docs/claude-code.
+          ANTHROPIC_API_KEY: ${{ secrets.FUELIX_API_KEY }}
+          ANTHROPIC_BASE_URL: https://api.fuelix.ai
