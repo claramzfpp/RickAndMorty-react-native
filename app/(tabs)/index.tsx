@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+import '@/components/season+episodes/SeasonCard';
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
