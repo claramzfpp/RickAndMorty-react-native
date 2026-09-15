@@ -57,8 +57,12 @@ jobs:
           # very large PRs (default threshold: 1000 changed lines) instead
           # of burning tokens/time on a diff that's too big to usefully
           # review in one pass.
+          # git diff --shortstat omits the insertions/deletions clause
+          # entirely on a zero-delta diff (e.g. a binary-only file change) —
+          # tolerate grep finding no matches so `set -e`/`pipefail` don't
+          # hard-fail the step; the awk fallback already handles empty input.
           CHANGED_LINES=$(git diff --shortstat "$BASE_SHA" "$HEAD_SHA" \
-            | grep -oE '[0-9]+ (insertion|deletion)s?' \
+            | { grep -oE '[0-9]+ (insertion|deletion)s?' || true; } \
             | awk '{sum += $1} END {print sum + 0}')
           echo "PR changes approximately $CHANGED_LINES lines (insertions + deletions)"
           echo "changed_lines=$CHANGED_LINES" >> "$GITHUB_OUTPUT"
