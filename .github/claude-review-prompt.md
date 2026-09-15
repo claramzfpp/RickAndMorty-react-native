@@ -6,6 +6,13 @@ something is a problem, and suggest a fix. Do not restate rules that don't
 apply to the changed files. If the diff looks clean against a section, say so
 briefly rather than omitting the section.
 
+**Delivery:** submit this as a GitHub PR review with **inline comments**
+on the exact file/line for each finding — do not write one long narrative
+comment. Use a short top-level review summary (a sentence or two: overall
+verdict, count of findings) and attach each specific issue as its own
+inline comment anchored to the relevant line(s). If a section has no
+findings, don't add an inline comment for it — just omit it.
+
 ## Architecture (Clean Architecture layering)
 
 - **No framework/API/DB leakage into `Domain`.** Domain entities, value
