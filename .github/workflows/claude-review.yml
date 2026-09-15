@@ -104,3 +104,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.FUELIX_API_KEY }}
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.FUELIX_API_KEY }}
           ANTHROPIC_BASE_URL: https://api.fuelix.ai
+          # A custom `prompt` bypasses the action's built-in tag-mode
+          # template (which normally instructs Claude to post its result
+          # via a tracking comment) — so the prompt itself now instructs
+          # Claude to post via `gh pr comment`, which needs these:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
