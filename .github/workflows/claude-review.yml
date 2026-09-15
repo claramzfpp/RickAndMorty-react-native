@@ -84,6 +84,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ steps.load-prompt.outputs.content }}
+          # Forces the action's built-in "tag mode" comment pipeline (a
+          # tracking comment it posts/updates itself, pre-authorized —
+          # no Bash/Write tool permission needed) to run even though this
+          # is a plain `pull_request` event with no @claude mention.
+          track_progress: true
           # TEMPORARY debug aid: shows the full Claude Code SDK output in
           # the job log so we can see the real error from the Fuel iX
           # gateway. Remove once the workflow is confirmed working.
@@ -104,9 +109,3 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.FUELIX_API_KEY }}
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.FUELIX_API_KEY }}
           ANTHROPIC_BASE_URL: https://api.fuelix.ai
-          # A custom `prompt` bypasses the action's built-in tag-mode
-          # template (which normally instructs Claude to post its result
-          # via a tracking comment) — so the prompt itself now instructs
-          # Claude to post via `gh pr comment`, which needs these:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}

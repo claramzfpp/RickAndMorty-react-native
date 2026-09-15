@@ -6,18 +6,6 @@ something is a problem, and suggest a fix. Do not restate rules that don't
 apply to the changed files. If the diff looks clean against a section, say so
 briefly rather than omitting the section.
 
-**Delivery (required, do this last):** write your full review to a temp
-file (e.g. `/tmp/claude-review.md`) and post it as a comment on this pull
-request by running:
-
-```
-gh pr comment "$PR_NUMBER" --body-file /tmp/claude-review.md
-```
-
-`PR_NUMBER` and a `gh`-authenticated `GITHUB_TOKEN` are already available
-in your environment. This step is not optional — a review that isn't
-posted as a PR comment provides no value to the team.
-
 ## Architecture (Clean Architecture layering)
 
 - **No framework/API/DB leakage into `Domain`.** Domain entities, value
