@@ -84,6 +84,16 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ steps.load-prompt.outputs.content }}
+          # TEMPORARY debug aid: shows the full Claude Code SDK output in
+          # the job log so we can see the real error from the Fuel iX
+          # gateway. Remove once the workflow is confirmed working.
+          show_full_output: true
+          # Claude Code's default model selection appends a "[1m]" extended
+          # context suffix (an Anthropic-direct-API beta feature) that the
+          # Fuel iX gateway likely doesn't recognize. Force a plain model
+          # id known to work against Fuel iX (matches a working local
+          # anthropic-sdk script that used model="claude-sonnet-5").
+          claude_args: "--model claude-sonnet-5"
         env:
           # Routed through the company's Fuel iX gateway instead of a
           # direct Anthropic API key — see docs.fuelix.ai/docs/claude-code.
