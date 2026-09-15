@@ -1,0 +1,132 @@
+# Claude Code Reviewer — Phase 1 (advisory / non-blocking)
+#
+# This workflow posts an automated Claude Code review comment on pull
+# requests. It is NOT a required/blocking check yet — it only comments.
+# A later phase of this rollout may promote it to a required status check
+# via branch protection settings (that change is manual, in GitHub repo
+# settings, and is out of scope for this file).
+#
+# SETUP REQUIRED: add FUELIX_API_KEY as a repository secret
+# (Settings -> Secrets and variables -> Actions) before this workflow can
+# actually call Claude. This repo authenticates through the company's
+# Fuel iX gateway (https://docs.fuelix.ai/docs/claude-code) rather than a
+# direct Anthropic API key, so the key must come from
+# https://developer.fuelix.ai, not console.anthropic.com. Until the
+# secret exists, the review step below will fail.
+#
+# Verified against anthropics/claude-code-action's action.yml (2026-09):
+# the review prompt is passed via the `prompt` input, which — unlike the
+# action's default @mention/label trigger mode — runs immediately with no
+# trigger phrase required.
+#
+# Gateway routing: the action itself runs a pre-flight check that requires
+# ANTHROPIC_API_KEY (or an OAuth token / workload identity federation) to
+# be set, independently of whatever the underlying Claude Code CLI is
+# told to use — so FUELIX_API_KEY is passed as ANTHROPIC_API_KEY to
+# satisfy that check, with ANTHROPIC_BASE_URL pointing the CLI at the
+# Fuel iX gateway for the actual API calls.
+
+name: Claude Code Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write # commonly required by the action to post PR comments via the GitHub API
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check diff size
+        id: diff-size
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Pragmatic guard, not a precise line-counter: skip the review on
+          # very large PRs (default threshold: 1000 changed lines) instead
+          # of burning tokens/time on a diff that's too big to usefully
+          # review in one pass.
+          # git diff --shortstat omits the insertions/deletions clause
+          # entirely on a zero-delta diff (e.g. a binary-only file change) —
+          # tolerate grep finding no matches so `set -e`/`pipefail` don't
+          # hard-fail the step; the awk fallback already handles empty input.
+          CHANGED_LINES=$(git diff --shortstat "$BASE_SHA" "$HEAD_SHA" \
+            | { grep -oE '[0-9]+ (insertion|deletion)s?' || true; } \
+            | awk '{sum += $1} END {print sum + 0}')
+          echo "PR changes approximately $CHANGED_LINES lines (insertions + deletions)"
+          echo "changed_lines=$CHANGED_LINES" >> "$GITHUB_OUTPUT"
+          if [ "$CHANGED_LINES" -gt 1000 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Diff exceeds 1000 changed lines — skipping automated Claude review."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Load review prompt
+        id: load-prompt
+        if: steps.diff-size.outputs.skip != 'true'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+          # Load the prompt from the base branch, not the PR's own HEAD —
+          # otherwise a PR could edit this file to rewrite the reviewer's
+          # own instructions (and the token/shell access it runs with).
+          # Falls back to the PR's copy only if the base branch doesn't
+          # have the file yet (expected before this workflow's own
+          # introducing PR is merged).
+          git fetch origin "$BASE_REF" --quiet
+          if git show FETCH_HEAD:.github/claude-review-prompt.md > /tmp/review-prompt.md 2>/dev/null; then
+            echo "Loaded review prompt from base branch ($BASE_REF)."
+          else
+            echo "::warning::claude-review-prompt.md not found on $BASE_REF; falling back to the PR's own copy."
+            cp .github/claude-review-prompt.md /tmp/review-prompt.md
+          fi
+          # Random per-run delimiter: a static one (e.g. "EOF") could be
+          # matched by a line inside the prompt file, letting it terminate
+          # the heredoc early and inject arbitrary $GITHUB_OUTPUT keys.
+          DELIM="PROMPT_EOF_$(openssl rand -hex 8)"
+          {
+            echo "content<<$DELIM"
+            cat /tmp/review-prompt.md
+            echo "$DELIM"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Claude Code Review
+        if: steps.diff-size.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: ${{ steps.load-prompt.outputs.content }}
+          # Forces the action's built-in "tag mode" comment pipeline (a
+          # tracking comment it posts/updates itself, pre-authorized —
+          # no Bash/Write tool permission needed) to run even though this
+          # is a plain `pull_request` event with no @claude mention.
+          track_progress: true
+          # Claude Code's default model selection appends a "[1m]" extended
+          # context suffix (an Anthropic-direct-API beta feature) that the
+          # Fuel iX gateway likely doesn't recognize. Force a plain model
+          # id known to work against Fuel iX (matches a working local
+          # anthropic-sdk script that used model="claude-sonnet-5").
+          claude_args: "--model claude-sonnet-5"
+        env:
+          # Routed through the company's Fuel iX gateway instead of a
+          # direct Anthropic API key — see docs.fuelix.ai/docs/claude-code.
+          # ANTHROPIC_API_KEY only satisfies claude-code-action's own
+          # pre-flight check; the actual request to Fuel iX authenticates
+          # via ANTHROPIC_AUTH_TOKEN (sent as an Authorization: Bearer
+          # header), which is what their gateway expects.
+          ANTHROPIC_API_KEY: ${{ secrets.FUELIX_API_KEY }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.FUELIX_API_KEY }}
+          ANTHROPIC_BASE_URL: https://api.fuelix.ai
