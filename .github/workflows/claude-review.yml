@@ -1,0 +1,77 @@
+# Claude Code Reviewer — Phase 1 (advisory / non-blocking)
+#
+# This workflow posts an automated Claude Code review comment on pull
+# requests. It is NOT a required/blocking check yet — it only comments.
+# A later phase of this rollout may promote it to a required status check
+# via branch protection settings (that change is manual, in GitHub repo
+# settings, and is out of scope for this file).
+#
+# SETUP REQUIRED: add ANTHROPIC_API_KEY as a repository secret
+# (Settings -> Secrets and variables -> Actions) before this workflow can
+# actually call Claude. Until that secret exists, the review step below
+# will fail.
+#
+# Verified against anthropics/claude-code-action's action.yml (2026-09):
+# the review prompt is passed via the `prompt` input, which — unlike the
+# action's default @mention/label trigger mode — runs immediately with no
+# trigger phrase required.
+
+name: Claude Code Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write # commonly required by the action to post PR comments via the GitHub API
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check diff size
+        id: diff-size
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Pragmatic guard, not a precise line-counter: skip the review on
+          # very large PRs (default threshold: 1000 changed lines) instead
+          # of burning tokens/time on a diff that's too big to usefully
+          # review in one pass.
+          CHANGED_LINES=$(git diff --shortstat "$BASE_SHA" "$HEAD_SHA" \
+            | grep -oE '[0-9]+ (insertion|deletion)s?' \
+            | awk '{sum += $1} END {print sum + 0}')
+          echo "PR changes approximately $CHANGED_LINES lines (insertions + deletions)"
+          echo "changed_lines=$CHANGED_LINES" >> "$GITHUB_OUTPUT"
+          if [ "$CHANGED_LINES" -gt 1000 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Diff exceeds 1000 changed lines — skipping automated Claude review."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Load review prompt
+        id: load-prompt
+        if: steps.diff-size.outputs.skip != 'true'
+        run: |
+          {
+            echo 'content<<PROMPT_EOF'
+            cat .github/claude-review-prompt.md
+            echo 'PROMPT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Claude Code Review
+        if: steps.diff-size.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: ${{ steps.load-prompt.outputs.content }}
