@@ -52,6 +52,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          set -euo pipefail
           # Pragmatic guard, not a precise line-counter: skip the review on
           # very large PRs (default threshold: 1000 changed lines) instead
           # of burning tokens/time on a diff that's too big to usefully
@@ -71,11 +72,31 @@ jobs:
       - name: Load review prompt
         id: load-prompt
         if: steps.diff-size.outputs.skip != 'true'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
+          set -euo pipefail
+          # Load the prompt from the base branch, not the PR's own HEAD —
+          # otherwise a PR could edit this file to rewrite the reviewer's
+          # own instructions (and the token/shell access it runs with).
+          # Falls back to the PR's copy only if the base branch doesn't
+          # have the file yet (expected before this workflow's own
+          # introducing PR is merged).
+          git fetch origin "$BASE_REF" --quiet
+          if git show FETCH_HEAD:.github/claude-review-prompt.md > /tmp/review-prompt.md 2>/dev/null; then
+            echo "Loaded review prompt from base branch ($BASE_REF)."
+          else
+            echo "::warning::claude-review-prompt.md not found on $BASE_REF; falling back to the PR's own copy."
+            cp .github/claude-review-prompt.md /tmp/review-prompt.md
+          fi
+          # Random per-run delimiter: a static one (e.g. "EOF") could be
+          # matched by a line inside the prompt file, letting it terminate
+          # the heredoc early and inject arbitrary $GITHUB_OUTPUT keys.
+          DELIM="PROMPT_EOF_$(openssl rand -hex 8)"
           {
-            echo 'content<<PROMPT_EOF'
-            cat .github/claude-review-prompt.md
-            echo 'PROMPT_EOF'
+            echo "content<<$DELIM"
+            cat /tmp/review-prompt.md
+            echo "$DELIM"
           } >> "$GITHUB_OUTPUT"
 
       - name: Run Claude Code Review
@@ -89,10 +110,6 @@ jobs:
           # no Bash/Write tool permission needed) to run even though this
           # is a plain `pull_request` event with no @claude mention.
           track_progress: true
-          # TEMPORARY debug aid: shows the full Claude Code SDK output in
-          # the job log so we can see the real error from the Fuel iX
-          # gateway. Remove once the workflow is confirmed working.
-          show_full_output: true
           # Claude Code's default model selection appends a "[1m]" extended
           # context suffix (an Anthropic-direct-API beta feature) that the
           # Fuel iX gateway likely doesn't recognize. Force a plain model
