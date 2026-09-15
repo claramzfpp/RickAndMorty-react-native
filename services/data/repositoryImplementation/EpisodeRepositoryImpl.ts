@@ -26,6 +26,15 @@ export class EpisodeRepositoryImpl implements EpisodeRepository {
         return counts;
     }
 
+    getEpisodeById(id: number): Episode | undefined {
+        return this.episodes.find(episode => episode.id === id);
+    }
+
+    searchEpisodesByName(name: string): Episode[] {
+        const lowerCasedName = name.toLowerCase();
+        return this.episodes.filter(episode => episode.name.toLowerCase().includes(lowerCasedName));
+    }
+
     private fetchPage(url: string): Promise<void> {
         return fetch(url)
             .then(response => {

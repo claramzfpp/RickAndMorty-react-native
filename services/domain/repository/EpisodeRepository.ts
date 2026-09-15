@@ -5,5 +5,9 @@ export interface EpisodeRepository {
     loadAllEpisodes(): Promise<void>;
     getEpisodesBySeason(season: number): Episode[];
     getEpisodeCountsBySeason(): { [season: number]: number };
+    // looks up within the already-loaded episodes; call loadAllEpisodes() first
+    getEpisodeById(id: number): Episode | undefined;
+    // looks up within the already-loaded episodes; call loadAllEpisodes() first
+    searchEpisodesByName(name: string): Episode[];
 }
 
