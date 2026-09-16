@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
         // Remova o paddingHorizontal daqui para o ScrollView usar a tela toda
         width: '100%', 
         marginVertical: 8,
+        paddingHorizontal: 12,
     },
     header: {
         flexDirection: 'row',

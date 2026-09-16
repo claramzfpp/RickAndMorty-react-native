@@ -35,25 +35,28 @@ const headerComponent = ({ seasonNumber }: { seasonNumber: number }) => {
 // a diferença entre 'export const' e 'export default'
 // 'export const' permite exportar múltiplos componentes ou funções do mesmo arquivo, e a nomeação deve ser feita explicitamente ao importar, 
 // enquanto 'export default' permite exportar apenas um componente ou função como padrão.
-export const SeasonCard = ({ season, onPress}: SeasonCardProps) => {
-    const shouldBeDisable = (season.number > 5)
+export const SeasonCard = ({ season, onPress }: SeasonCardProps) => {
+    const noDetailsAvailable = (season.number > 5)
 
     return (
         <Pressable
             onPress={onPress}
-            disabled={shouldBeDisable}
+            disabled={noDetailsAvailable}
             style={({ pressed }) => [
                 styles.container,
                 { backgroundColor: "rgb(211, 211, 211)" },
-                pressed && !shouldBeDisable && styles.pressed,
-                shouldBeDisable && styles.disabled,
+                pressed && !noDetailsAvailable && styles.pressed,
+                noDetailsAvailable && styles.disabled,
             ]}
         >
             {headerComponent({ seasonNumber: season.number })}
 
             <Text style={styles.number}>{season.number}</Text>
             <Text style={styles.season}>Season </Text>
-            <Text style={styles.episodesNumber}>{season.episodesNumber} episodes</Text>
+
+            {!noDetailsAvailable && (
+                <Text style={styles.episodesNumber}>{season.episodesNumber} episodes</Text>
+            )}
         </Pressable>
     );
 };
