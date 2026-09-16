@@ -13,6 +13,8 @@ export default function DiscoverView() {
   return (
     <View style={[styles.container, { backgroundColor: colors.gray }]}>
 
+      <Text style={styles.title}>Discover</Text>
+
 
 
 
@@ -30,7 +32,13 @@ export default function DiscoverView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  title: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    color: Colors.light.green
   },
 });
