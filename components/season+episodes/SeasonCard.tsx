@@ -17,7 +17,6 @@ export interface SeasonCardProps {
         episodesNumber: number;
     };
     onPress?: () => void;
-    disabled?: boolean;
 }
 
 const headerComponent = ({ seasonNumber }: { seasonNumber: number }) => {

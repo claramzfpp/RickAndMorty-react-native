@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 import '@/components/season+episodes/SeasonCard';
+import '@/components/GenericCarousel';
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+
 
 // TODO: when repositories are wired back into this view, do NOT import *RepositoryImpl
 // classes directly — depend on the domain repository interfaces and inject them via a
