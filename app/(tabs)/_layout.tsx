@@ -2,16 +2,13 @@ import { Tabs } from 'expo-router/js-tabs';
 import { SymbolView } from 'expo-symbols';
 
 import CustomTabBar from '@/components/CustomTabBar';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 export default function TabLayout() {
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
