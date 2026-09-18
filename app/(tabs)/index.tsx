@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-import { Text, View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
 import { SeasonEpisodesCarousel } from '@/components/season+episodes/SeasonEpisodesCarousel';
+import { Text, View } from '@/components/shared/Themed';
+import { useColorScheme } from '@/components/shared/useColorScheme';
+import Colors from '@/constants/Colors';
 import { getEpisodeRepository } from '@/services/composition/repositories';
 
 export default function DiscoverView() {

@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
 
 // definindo constantes para o tamanho da barra, margens e espaçamento do "pill" (indicador de seleção)

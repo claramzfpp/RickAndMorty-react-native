@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { preview } from "radon-ide";
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SeasonCard } from './season+episodes/SeasonCard';
+import { SeasonCard } from '../season+episodes/SeasonCard';
 import Colors from '@/constants/Colors';
 import { SymbolView } from 'expo-symbols';
 
