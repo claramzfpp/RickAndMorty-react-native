@@ -1,7 +1,7 @@
 import { ActivityIndicator, Text } from 'react-native';
 import { GenericCarousel } from '@/components/GenericCarousel';
 import { SeasonCard } from './SeasonCard';
-import { useSeasonEpisodesViewModel } from '@/app/features/season/seasonViewModel';
+import { useSeasonEpisodesViewModel } from './seasonViewModel';
 import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
 
 export interface SeasonEpisodesCarouselProps {

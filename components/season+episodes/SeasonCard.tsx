@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     episodesNumber: {
         fontSize: 11,
         fontWeight: '500',
-        color: "rgba(95, 99, 100)",
+        color: "rgb(95, 99, 100)",
     },
     noDetails: {
         fontSize: 11,
@@ -109,12 +109,14 @@ const styles = StyleSheet.create({
     },
 });
 
-preview(
-    <View style={{ padding: 16, gap: 12 }}>
-        <SeasonCard season={{ number: 1, episodesNumber: 10 }} />
-        <SeasonCard season={{ number: 2, episodesNumber: 10 }} />
-        <SeasonCard season={{ number: 6, episodesNumber: 12 }} />
-    </View>
-);
+if (__DEV__) {
+    preview(
+        <View style={{ padding: 16, gap: 12 }}>
+            <SeasonCard season={{ number: 1, episodesNumber: 10 }} />
+            <SeasonCard season={{ number: 2, episodesNumber: 10 }} />
+            <SeasonCard season={{ number: 6, episodesNumber: 12 }} />
+        </View>
+    );
+}
 
 
