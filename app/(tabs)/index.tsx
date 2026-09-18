@@ -15,12 +15,6 @@ export default function DiscoverView() {
 
       <Text style={styles.title}>Discover</Text>
 
-
-
-
-
-
-
       <SeasonEpisodesCarousel
         episodeRepository={getEpisodeRepository()}
       />
