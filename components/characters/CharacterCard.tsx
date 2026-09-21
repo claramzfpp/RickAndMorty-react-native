@@ -2,7 +2,7 @@ import Colors from '@/constants/Colors';
 import { Character } from '@/services/domain/model/Character';
 import { mockCharacters } from '@/services/domain/model/__mocks__/Character.mock';
 import { preview } from "radon-ide";
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 export const CharacterCellSize = {
   Discover: { width: 140, height: 212 },
@@ -66,20 +66,29 @@ export const CharacterCard = ({ character, onPress, size }: CharacterCellProps) 
         pressed && styles.pressed,
       ]}
     >
-      { // aqui viria a imagem do personagem 
-      }
+      <Image
+        source={{ uri: character.image }}
+        style={{
+          flex: 1,
+          width: size.width,
+          resizeMode: 'cover',
+        }}
+      ></Image>
 
       {FooterContainer({ character: character, width: size.width })}
 
-    </Pressable>
+    </Pressable >
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-start',
-    borderRadius: 10,
+    borderRadius: 16,
     justifyContent: 'center',
+    overflow: 'hidden',
+    borderColor: "rgb(211, 211, 211)",
+    borderWidth: 1
   },
   name: {
     fontSize: 14,
