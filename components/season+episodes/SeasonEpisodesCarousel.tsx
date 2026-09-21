@@ -1,8 +1,8 @@
+import { GenericCarousel } from '@/components/shared/GenericCarousel';
+import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
 import { ActivityIndicator, Text } from 'react-native';
-import { GenericCarousel } from '@/components/GenericCarousel';
 import { SeasonCard } from './SeasonCard';
 import { useSeasonEpisodesViewModel } from './seasonViewModel';
-import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
 
 export interface SeasonEpisodesCarouselProps {
     episodeRepository: EpisodeRepository;

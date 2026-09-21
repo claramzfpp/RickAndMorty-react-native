@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
 
-import { Text, View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
 import { SeasonEpisodesCarousel } from '@/components/season+episodes/SeasonEpisodesCarousel';
-import { getEpisodeRepository } from '@/services/composition/repositories';
+import { CharactersCarousel } from '@/components/characters/charactersCarousel/CharactersCarousel';
+import { Text, View } from '@/components/shared/Themed';
+import { useColorScheme } from '@/components/shared/useColorScheme';
+import Colors from '@/constants/Colors';
+import { getCharacterRepository, getEpisodeRepository } from '@/services/composition/repositories';
 
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
@@ -17,6 +18,11 @@ export default function DiscoverView() {
 
       <SeasonEpisodesCarousel
         episodeRepository={getEpisodeRepository()}
+      />
+
+      <CharactersCarousel
+        characterRepository={getCharacterRepository()}
+        onSeeAllClick={() => console.log("clickTest")}
       />
 
     </View>

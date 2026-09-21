@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { preview } from "radon-ide";
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SeasonCard } from './season+episodes/SeasonCard';
+import { SeasonCard } from '../season+episodes/SeasonCard';
 import Colors from '@/constants/Colors';
 import { SymbolView } from 'expo-symbols';
 
@@ -27,6 +27,7 @@ export const GenericCarousel = ({ title, onSeeAllClick, content }: GenericCarous
                             }}
                             tintColor={styles.seeAll.color}
                             size={styles.seeAll.fontSize}
+                            weight="bold"
                         />
                     </Pressable>
                 )}
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     },
     seeAll: {
         fontSize: 14,
-        fontWeight: '500',
+        fontWeight: '700',
         color: Colors.light.brown,
     },
     seeAllContainer: {

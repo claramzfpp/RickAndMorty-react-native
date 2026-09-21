@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 
-import { Text, View } from '@/components/Themed';
+import { Text, View } from '@/components/shared/Themed';
+import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
 
 export default function FavoritesView() {
   const colorScheme = useColorScheme();
@@ -15,7 +15,7 @@ export default function FavoritesView() {
 
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
-      
+
     </View>
   );
 }
