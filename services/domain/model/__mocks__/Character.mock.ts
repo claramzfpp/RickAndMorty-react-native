@@ -4,7 +4,7 @@ import { CharacterId } from '../CharacterId';
 export const mockCharacter: Character = {
     id: new CharacterId(1),
     name: 'Rick Sanchez',
-    status: 'Unknown',
+    status: 'unknown',
     origin: 'Earth (C-137)',
     image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
     species: 'Human',

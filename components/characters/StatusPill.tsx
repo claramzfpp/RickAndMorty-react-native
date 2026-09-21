@@ -1,11 +1,12 @@
 import Colors from '@/constants/Colors';
+import { CharacterStatus } from '@/services/domain/model/Character';
 import { StyleSheet, Text, View } from 'react-native';
 
 export interface StatusPillProps {
-  status: string;
+  status: CharacterStatus;
 }
 
-const getStatusColor = (status: string): string => {
+const getStatusColor = (status: CharacterStatus): string => {
   switch (status) {
     case "Alive":
       return Colors.light.green;

@@ -1,4 +1,3 @@
-import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
 import { useEffect, useState } from 'react';
 
 import { CharacterRepository } from '@/services/domain/repository/CharacterRepository';

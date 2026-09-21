@@ -50,9 +50,11 @@ const styles = StyleSheet.create({
   },
 });
 
-preview(
-  <View style={{ padding: 16, gap: 12, flexDirection: 'row' }}>
-    <CharacterCard character={mockCharacters[0]} size={CharacterCellSize.Discover} />
-    <CharacterCard character={mockCharacters[1]} size={CharacterCellSize.Grid} />
-  </View>
-);
+if (__DEV__) {
+  preview(
+    <View style={{ padding: 16, gap: 12, flexDirection: 'row' }}>
+      <CharacterCard character={mockCharacters[0]} size={CharacterCellSize.Discover} />
+      <CharacterCard character={mockCharacters[1]} size={CharacterCellSize.Grid} />
+    </View>
+  );
+}
