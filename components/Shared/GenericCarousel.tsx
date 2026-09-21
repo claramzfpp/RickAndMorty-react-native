@@ -27,6 +27,7 @@ export const GenericCarousel = ({ title, onSeeAllClick, content }: GenericCarous
                             }}
                             tintColor={styles.seeAll.color}
                             size={styles.seeAll.fontSize}
+                            weight="bold"
                         />
                     </Pressable>
                 )}
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     },
     seeAll: {
         fontSize: 14,
-        fontWeight: '500',
+        fontWeight: '700',
         color: Colors.light.brown,
     },
     seeAllContainer: {

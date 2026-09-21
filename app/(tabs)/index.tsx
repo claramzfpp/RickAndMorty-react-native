@@ -1,12 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 import { SeasonEpisodesCarousel } from '@/components/season+episodes/SeasonEpisodesCarousel';
-import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
+import { CharactersCarousel } from '@/components/characters/charactersCarousel/CharactersCarousel';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
-import { getEpisodeRepository } from '@/services/composition/repositories';
-import { mockCharacter } from '@/services/domain/model/__mocks__/Character.mock';
+import { getCharacterRepository, getEpisodeRepository } from '@/services/composition/repositories';
 
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
@@ -21,9 +20,9 @@ export default function DiscoverView() {
         episodeRepository={getEpisodeRepository()}
       />
 
-      <CharacterCard
-        character={mockCharacter}
-        size={CharacterCellSize.Discover}
+      <CharactersCarousel
+        characterRepository={getCharacterRepository()}
+        onSeeAllClick={() => console.log("clickTest")}
       />
 
     </View>
