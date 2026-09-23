@@ -6,6 +6,9 @@ import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 import { getCharacterRepository, getEpisodeRepository } from '@/services/composition/repositories';
+import { Location } from '@/services/domain/model/Location';
+import { mockLocations } from '@/services/domain/model/__mocks__/Location.mock';
+import { LocationCard } from '@/components/locationsCarousel/LocationCard';
 
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
@@ -24,6 +27,12 @@ export default function DiscoverView() {
         characterRepository={getCharacterRepository()}
         onSeeAllClick={() => console.log("clickTest")}
       />
+
+      <View style={{ padding: 16, gap: 12, flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {mockLocations.map((location, index) => (
+                      <LocationCard key={location.id.toString()} location={location} index={index + 1} />
+                  ))}
+              </View>
 
     </View>
   );
