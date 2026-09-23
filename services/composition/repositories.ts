@@ -2,6 +2,8 @@ import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepositor
 import { EpisodeRepositoryImpl } from '@/services/data/repositoryImplementation/EpisodeRepositoryImpl';
 import { CharacterRepository } from '@/services/domain/repository/CharacterRepository';
 import { CharacterRepositoryImpl } from '@/services/data/repositoryImplementation/CharacterRepositoryImpl';
+import { LocationRepository } from '@/services/domain/repository/LocationRepository';
+import { LocationRepositoryImpl } from '@/services/data/repositoryImplementation/LocationRepositoryImpl';
 
 let episodeRepositoryInstance: EpisodeRepository | undefined;
 
@@ -19,4 +21,13 @@ export function getCharacterRepository(): CharacterRepository {
         characterRepositoryInstance = new CharacterRepositoryImpl();
     }
     return characterRepositoryInstance;
+}
+
+let locationRepositoryInstance: LocationRepository | undefined;
+
+export function getLocationRepository(): LocationRepository {
+    if (locationRepositoryInstance === undefined) {
+        locationRepositoryInstance = new LocationRepositoryImpl();
+    }
+    return locationRepositoryInstance;
 }
