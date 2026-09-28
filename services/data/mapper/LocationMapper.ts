@@ -8,7 +8,12 @@ export class LocationMapper {
             id: new LocationId(rmLocation.id),
             name: rmLocation.name,
             type: rmLocation.type,
-            dimension: rmLocation.dimension
+            dimension: capitalizeFirstLetter(rmLocation.dimension)
         };
     }
+}
+
+function capitalizeFirstLetter(str: string): string {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }

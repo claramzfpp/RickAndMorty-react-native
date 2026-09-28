@@ -2,10 +2,11 @@ import { StyleSheet } from 'react-native';
 
 import { SeasonEpisodesCarousel } from '@/components/season+episodes/SeasonEpisodesCarousel';
 import { CharactersCarousel } from '@/components/characters/charactersCarousel/CharactersCarousel';
+import { LocationCarousel } from '@/components/locationsCarousel/LocationCarousel';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
-import { getCharacterRepository, getEpisodeRepository } from '@/services/composition/repositories';
+import { getCharacterRepository, getEpisodeRepository, getLocationRepository } from '@/services/composition/repositories';
 
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
@@ -25,6 +26,11 @@ export default function DiscoverView() {
         onSeeAllClick={() => console.log("clickTest")}
       />
 
+      <LocationCarousel
+        locationRepository={getLocationRepository()}
+        onSeeAllClick={() => console.log("clickTest")}
+      />
+
     </View>
   );
 }
@@ -35,6 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     paddingHorizontal: 12,
+    gap: 10
   },
   title: {
     fontSize: 50,
