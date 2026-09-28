@@ -34,7 +34,7 @@ export const LocationCarousel = ({
                         <LocationCard
                             key={location.id.value}
                             location={location}
-                            index={index + 1}
+                            index={index}
                         />
                     ))}
                 </>

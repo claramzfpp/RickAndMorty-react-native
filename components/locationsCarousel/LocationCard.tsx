@@ -13,7 +13,7 @@ export interface LocationCardProps {
 
 const headerComponent = ({ type, index }: { type: string, index: number }) => {
     const colorArray = [Colors.light.pink, Colors.light.green, Colors.light.yellow];
-    const componentColor = colorArray[(index - 1) % colorArray.length]
+    const componentColor = colorArray[index % colorArray.length]
 
     return (
         <SymbolView
@@ -111,7 +111,7 @@ if (__DEV__) {
     preview(
         <View style={{ padding: 16, gap: 12, flexDirection: 'row', flexWrap: 'wrap' }}>
             {mockLocations.map((location, index) => (
-                <LocationCard key={location.id.toString()} location={location} index={index + 1} />
+                <LocationCard key={location.id.toString()} location={location} index={index} />
             ))}
         </View>
     );
