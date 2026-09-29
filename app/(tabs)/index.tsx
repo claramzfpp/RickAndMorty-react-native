@@ -9,6 +9,16 @@ import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 import { getCharacterRepository, getEpisodeRepository, getLocationRepository } from '@/services/composition/repositories';
 
+// app/ → só as telas (index.tsx, [id].tsx), propositalmente "magras": elas chamam o hook do view model e renderizam o componente, 
+// mas não guardam lógica de UI ou de estado nelas mesmas.
+// 
+// components/ → os blocos reutilizáveis de apresentação: os Cards, os Carrossels, os ViewModels (useCharacterCarouselViewModel) e os UI States. 
+// Nada aqui sabe que existe uma rota, um CharactersCarousel pode, em tese, ser usado em duas telas diferentes sem saber de nenhuma delas.
+// 
+//services/ → Domain e Data (repositórios, entidades, mappers) — a camada mais pura, sem nada de UI.
+//
+// o index é basicamente a rota de entrada para uma pasta (principal arquivo de referencia numa navegação (acho))
+
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
