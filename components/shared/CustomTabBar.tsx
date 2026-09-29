@@ -17,7 +17,7 @@ const BAR_HORIZONTAL_MARGIN = 54;
 const BAR_BOTTOM_MARGIN = 24;
 const PILL_INSET = 6;
 
-export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   //pegando o esquema de cores atual (claro ou escuro) e as cores correspondentes do arquivo Colors.ts
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
