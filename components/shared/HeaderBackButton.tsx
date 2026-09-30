@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 8,
-    marginLeft: 8,
+    marginLeft: 0,
   },
   blur: {
     borderRadius: BUTTON_SIZE / 2,

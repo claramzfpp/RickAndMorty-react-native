@@ -2,7 +2,7 @@ import { router, Stack } from 'expo-router';
 import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { LocationCard } from '@/components/locationsCarousel/LocationCard';
+import { LocationCard, LocationCellSize } from '@/components/locationsCarousel/LocationCard';
 import { useLocationCarouselViewModel } from '@/components/locationsCarousel/locationCarouselViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
@@ -43,7 +43,7 @@ export default function LocationsListScreen() {
           contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
-            <LocationCard location={item} index={index} />
+            <LocationCard location={item} index={index} size={LocationCellSize.Grid} />
           )}
         />
       )}

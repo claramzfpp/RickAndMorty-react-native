@@ -1,7 +1,7 @@
 import { GenericCarousel } from '@/components/shared/GenericCarousel';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
 import { ActivityIndicator, Text } from 'react-native';
-import { LocationCard } from './LocationCard';
+import { LocationCard, LocationCellSize } from './LocationCard';
 import { useLocationCarouselViewModel } from './locationCarouselViewModel';
 
 export interface LocationCarouselProps {
@@ -35,6 +35,7 @@ export const LocationCarousel = ({
                             key={location.id.value}
                             location={location}
                             index={index}
+                            size={LocationCellSize.Discover}
                         />
                     ))}
                 </>
