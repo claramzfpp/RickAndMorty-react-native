@@ -1,7 +1,8 @@
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
 import { useCharacterCarouselViewModel } from '@/components/characters/charactersCarousel/characterCarouselViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
@@ -25,7 +26,7 @@ export default function CharactersListScreen() {
       ]}
     >
       <Stack.Screen options={{
-        title: 'Characters',
+        title: '',
         headerTransparent: true,
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
       }} />
@@ -34,7 +35,18 @@ export default function CharactersListScreen() {
       {state.status === 'error' && <Text>{state.message}</Text>}
 
       {state.status === 'loaded' && (
-        <Text>dasdasdasdf</Text>
+        <ScrollView
+          contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + 16 }]}
+          showsVerticalScrollIndicator={false}
+        >
+          {state.charactersArray.map(character => (
+            <CharacterCard
+              key={character.id.value}
+              character={character}
+              size={CharacterCellSize.Grid}
+            />
+          ))}
+        </ScrollView>
       )}
     </View>
   );
@@ -44,5 +56,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
   },
 });
