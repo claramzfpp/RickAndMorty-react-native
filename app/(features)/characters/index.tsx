@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
@@ -35,18 +35,17 @@ export default function CharactersListScreen() {
       {state.status === 'error' && <Text>{state.message}</Text>}
 
       {state.status === 'loaded' && (
-        <ScrollView
-          contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + 16 }]}
+        <FlatList
+          data={state.charactersArray}
+          keyExtractor={(character) => character.id.value.toString()}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
           showsVerticalScrollIndicator={false}
-        >
-          {state.charactersArray.map(character => (
-            <CharacterCard
-              key={character.id.value}
-              character={character}
-              size={CharacterCellSize.Grid}
-            />
-          ))}
-        </ScrollView>
+          renderItem={({ item }) => (
+            <CharacterCard character={item} size={CharacterCellSize.Grid} />
+          )}
+        />
       )}
     </View>
   );
@@ -57,11 +56,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  content: {
+    paddingTop: 16,
+    gap: 12,
+  },
+  row: {
     justifyContent: 'center',
     gap: 12,
-    paddingTop: 16,
   },
 });
