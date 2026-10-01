@@ -57,3 +57,55 @@ Sem cobertura para:
 Casos a cobrir: `loadMore` no-op com `hasNextPage` false ou load em andamento; chamadas concorrentes de `loadNextPage()` sem fetch duplicado; falha seguida de retry (`nextUrl` inalterado, `loadMoreError` definido e depois limpo); lista vazia.
 
 Idealmente é feito antes do item 1, que depende desses testes.
+
+---
+
+## 3. Telas de busca de Characters e Locations duplicadas
+
+- **Origem:** review da branch `adding-search-feature-characters-and-location`.
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+### Problema
+
+[characters/index.tsx](../app/(features)/characters/index.tsx) e [locations/index.tsx](../app/(features)/locations/index.tsx) ganharam cerca de 100 linhas quase idênticas cada: o mesmo header (voltar e busca), a mesma `SearchBar` flutuante e a mesma estrutura de estados (loading, vazio, erro e lista). Só mudam o tipo, o card, o view model e o placeholder. Qualquer ajuste na UI de busca precisa ser feito duas vezes e as telas podem divergir.
+
+### Opção de refatoração
+
+Componente genérico, por exemplo `SearchableGridScreen<T>`, que recebe o view model, o `renderItem` e o placeholder. Relacionado ao item 1, que cobre a duplicação equivalente nos view models.
+
+### Ao retomar
+
+Fazer junto com o item 4, num PR separado de `refactor:`, porque o view model genérico atenderia as duas telas.
+
+---
+
+## 4. Lógica de apresentação dentro das telas de busca
+
+- **Origem:** review da branch `adding-search-feature-characters-and-location`.
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+### Problema
+
+Dentro do componente de cada tela há um bloco que une o estado da lista normal com o da busca em um único `view`, escolhe qual `loadMore` usar e decide quando mostrar o erro com retry. Isso é regra de apresentação e deveria estar em um view model (por exemplo `useCharacterScreenViewModel`), não no JSX. Hoje, testar esse bloco exige montar a tela inteira.
+
+### Ao retomar
+
+Extrair o bloco para um view model genérico depois do item 3, para servir às duas telas, e cobri-lo com testes (ver item 2).
+
+---
+
+## 5. Repositórios misturam estado mutável e consultas sem estado
+
+- **Origem:** review da branch `adding-search-feature-characters-and-location`. O design é anterior à branch; a busca só adicionou mais um método sem estado.
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+### Problema
+
+`CharacterRepository` e `LocationRepository` expõem estado mutável (`characters`/`locations`, `hasNextPage`, `loadNextPage()`, que acumula páginas internamente) ao lado de consultas puras (`searchCharacters(name, page)`, `getCharacterById`, e equivalentes em Locations). Quem usa não sabe se uma chamada altera algo interno, e o estado compartilhado dificulta testar e usar o repositório em dois lugares ao mesmo tempo.
+
+### Ao retomar
+
+É uma decisão de arquitetura que afeta toda a camada de dados. Avaliar junto com a opção B do item 1 (classe base de repositório paginado), separando um repositório com estado de consultas sem estado. Não misturar com PRs de feature.
