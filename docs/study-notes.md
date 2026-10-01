@@ -79,6 +79,20 @@ Mesma energia de um `enum` com associated values (Swift) ou de uma `sealed class
 
 ---
 
+## Paginação e `inFlight`
+
+Origem: [services/data/repositoryImplementation/CharacterRepositoryImpl.ts](../services/data/repositoryImplementation/CharacterRepositoryImpl.ts)
+
+- A API devolve 20 itens por página e `info.next` com a URL da próxima. O repositório guarda essa URL em `nextUrl` e concatena os itens em `characters`.
+- **Problema:** o `onEndReached` da `FlatList` pode disparar várias vezes seguidas. Como `nextUrl` só é atualizado quando a resposta chega, duas chamadas leem a mesma URL, buscam a mesma página e **duplicam os itens**.
+- **`inFlight`** guarda a requisição em andamento (`Promise<void> | null`). Se `loadNextPage()` for chamado de novo enquanto ela não terminou, devolve a **mesma promise** em vez de fazer outro fetch.
+- Devolver a promise (e não só dar `return`) faz o segundo chamador esperar a carga terminar de verdade, em vez de achar que acabou e ler a lista desatualizada.
+- O `.finally` volta `inFlight` para `null`, com sucesso ou erro, então ele nunca fica preso. Em erro, `nextUrl` não avança, então tentar de novo busca a mesma página.
+- Fica no repositório, e não só no hook, porque ele é um singleton compartilhado: home e see all podem chamar ao mesmo tempo, e um `useRef` do hook só enxerga a própria tela.
+- Analogia: parecido com guardar a `Task` em andamento no Swift (`private var loadTask: Task<Void, Error>?`) ou um `Deferred`/`Job` no Kotlin, e fazer quem chega depois dar `await` na mesma coisa.
+
+---
+
 ## Animação e tab bar customizada
 
 Origem: [components/shared/CustomTabBar.tsx](../components/shared/CustomTabBar.tsx)
