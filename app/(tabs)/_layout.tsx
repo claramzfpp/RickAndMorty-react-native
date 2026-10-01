@@ -18,7 +18,7 @@ export default function TabLayout() {
             <SymbolView
               name={{
                 ios: 'house.fill',
-                android: 'code',
+                android: 'home',
                 web: 'code',
               }}
               tintColor={color}
@@ -35,7 +35,7 @@ export default function TabLayout() {
             <SymbolView
               name={{
                 ios: 'heart.fill',
-                android: 'code',
+                android: 'favorite',
                 web: 'code',
               }}
               tintColor={color}
