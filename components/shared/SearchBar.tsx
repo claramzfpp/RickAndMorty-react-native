@@ -11,9 +11,11 @@ export interface SearchBarProps {
     placeholder: string;
     onClear?: () => void;
     autoFocus?: boolean;
+    /** Mantém o botão de limpar visível mesmo com o campo vazio (ex.: quando ele também fecha a busca). */
+    alwaysShowClear?: boolean;
 }
 
-export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus }: SearchBarProps) => {
+export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus, alwaysShowClear }: SearchBarProps) => {
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({ light: 'rgb(235, 235, 235)', dark: 'rgb(38, 38, 38)' }, 'background');
     const iconColor = useThemeColor({}, 'gray');
@@ -41,7 +43,7 @@ export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus
                 autoCapitalize="none"
                 autoFocus={autoFocus}
             />
-            {value.length > 0 && (
+            {(value.length > 0 || alwaysShowClear) && (
                 <Pressable onPress={handleClear} hitSlop={8} accessibilityLabel="Clear search">
                     <SymbolView
                         name={{ ios: 'xmark.circle.fill', android: 'cancel', web: 'cancel' }}

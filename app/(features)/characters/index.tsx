@@ -19,6 +19,8 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Character } from '@/services/domain/model/Character';
 import { getCharacterRepository } from '@/services/composition/repositories';
 
+const SEARCH_BAR_HEIGHT = 44;
+
 export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
@@ -28,9 +30,10 @@ export default function CharactersListScreen() {
   const repository = getCharacterRepository();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const toggleSearch = () => {
-    if (isSearchOpen) setQuery('');
-    setIsSearchOpen((open) => !open);
+  const openSearch = () => setIsSearchOpen(true);
+  const closeSearch = () => {
+    setQuery('');
+    setIsSearchOpen(false);
   };
   const debouncedQuery = useDebouncedValue(query);
   const isSearching = debouncedQuery.trim() !== '';
@@ -68,30 +71,26 @@ export default function CharactersListScreen() {
       <Stack.Screen options={{
         title: '',
         headerTransparent: true,
-        unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
-        unstable_headerRightItems: () => [headerSearchButtonItem(toggleSearch, isSearchOpen)],
-        headerRight: () => <HeaderSearchButton onPress={toggleSearch} isActive={isSearchOpen} />,
+        headerBackVisible: isSearchOpen ? false : undefined,
+        unstable_headerLeftItems: () => isSearchOpen ? [] : [headerBackButtonItem(() => router.back())],
+        unstable_headerRightItems: () => isSearchOpen ? [] : [headerSearchButtonItem(openSearch)],
+        headerRight: () => isSearchOpen ? null : <HeaderSearchButton onPress={openSearch} />,
       }} />
 
-      {isSearchOpen ? (
-        <View style={[styles.searchBar, { paddingTop: contentTopPadding }]}>
-          <SearchBar
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search characters"
-            autoFocus
-          />
+      {view.status === 'loading' && <SearchLoadingState topOffset={contentTopPadding} />}
+      {view.status === 'empty' && (
+        <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+          <SearchEmptyState query={debouncedQuery.trim()} />
         </View>
-      ) : (
-        <View style={{ height: contentTopPadding - 16 }} />
       )}
-
-      {view.status === 'loading' && <SearchLoadingState />}
-      {view.status === 'empty' && <SearchEmptyState query={debouncedQuery.trim()} />}
       {view.status === 'error' && (
         isSearching
-          ? <SearchErrorState message={view.message} onRetry={search.retry} />
-          : <Text>{view.message}</Text>
+          ? (
+            <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+              <SearchErrorState message={view.message} onRetry={search.retry} />
+            </View>
+          )
+          : <Text style={{ marginTop: contentTopPadding }}>{view.message}</Text>
       )}
 
       {view.status === 'loaded' && (
@@ -115,7 +114,7 @@ export default function CharactersListScreen() {
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
             styles.content,
-            { paddingTop: 12, paddingBottom: insets.bottom + 16 },
+            { paddingTop: contentTopPadding, paddingBottom: insets.bottom + 16 },
           ]}
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
@@ -123,6 +122,25 @@ export default function CharactersListScreen() {
             <CharacterCard character={item} size={CharacterCellSize.Grid} />
           )}
         />
+      )}
+
+      {/* Flutua sobre a área do header (que fica vazia com a busca aberta), assim a lista continua rolando por baixo do header transparente. */}
+      {isSearchOpen && (
+        <View
+          style={[
+            styles.searchBar,
+            { top: isIOS ? insets.top : insets.top + (HEADER_CONTENT_HEIGHT - SEARCH_BAR_HEIGHT) / 2 },
+          ]}
+        >
+          <SearchBar
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search characters"
+            onClear={closeSearch}
+            alwaysShowClear
+            autoFocus
+          />
+        </View>
       )}
     </View>
   );
@@ -134,8 +152,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchBar: {
-    alignSelf: 'stretch',
+    position: 'absolute',
+    left: 0,
+    right: 0,
     paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+  },
+  stateWrapper: {
+    alignSelf: 'stretch',
+    backgroundColor: 'transparent',
   },
   content: {
     gap: 12,

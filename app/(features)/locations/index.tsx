@@ -8,6 +8,7 @@ import { LocationCard, LocationCellSize } from '@/components/locationsCarousel/L
 import { useLocationListViewModel } from '@/components/locationsCarousel/locationListViewModel';
 import { useLocationSearchViewModel } from '@/components/locationsCarousel/locationSearchViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
+import { HeaderSearchButton, headerSearchButtonItem } from '@/components/shared/HeaderSearchButton';
 import { SearchBar } from '@/components/shared/SearchBar';
 import { SearchEmptyState, SearchErrorState, SearchLoadingState } from '@/components/shared/SearchStateViews';
 import { Text, View } from '@/components/shared/Themed';
@@ -18,6 +19,8 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Location } from '@/services/domain/model/Location';
 import { getLocationRepository } from '@/services/composition/repositories';
 
+const SEARCH_BAR_HEIGHT = 44;
+
 export default function LocationsListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
@@ -25,7 +28,13 @@ export default function LocationsListScreen() {
   const headerHeight = useHeaderHeight();
   const contentTopPadding = isIOS ? headerHeight + 16 : 16;
   const repository = getLocationRepository();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const openSearch = () => setIsSearchOpen(true);
+  const closeSearch = () => {
+    setQuery('');
+    setIsSearchOpen(false);
+  };
   const debouncedQuery = useDebouncedValue(query);
   const isSearching = debouncedQuery.trim() !== '';
   const list = useLocationListViewModel(repository);
@@ -62,23 +71,26 @@ export default function LocationsListScreen() {
       <Stack.Screen options={{
         title: '',
         headerTransparent: true,
-        unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
+        headerBackVisible: isSearchOpen ? false : undefined,
+        unstable_headerLeftItems: () => isSearchOpen ? [] : [headerBackButtonItem(() => router.back())],
+        unstable_headerRightItems: () => isSearchOpen ? [] : [headerSearchButtonItem(openSearch)],
+        headerRight: () => isSearchOpen ? null : <HeaderSearchButton onPress={openSearch} />,
       }} />
 
-      <View style={[styles.searchBar, { paddingTop: contentTopPadding }]}>
-        <SearchBar
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search locations"
-        />
-      </View>
-
-      {view.status === 'loading' && <SearchLoadingState />}
-      {view.status === 'empty' && <SearchEmptyState query={debouncedQuery.trim()} />}
+      {view.status === 'loading' && <SearchLoadingState topOffset={contentTopPadding} />}
+      {view.status === 'empty' && (
+        <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+          <SearchEmptyState query={debouncedQuery.trim()} />
+        </View>
+      )}
       {view.status === 'error' && (
         isSearching
-          ? <SearchErrorState message={view.message} onRetry={search.retry} />
-          : <Text>{view.message}</Text>
+          ? (
+            <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+              <SearchErrorState message={view.message} onRetry={search.retry} />
+            </View>
+          )
+          : <Text style={{ marginTop: contentTopPadding }}>{view.message}</Text>
       )}
 
       {view.status === 'loaded' && (
@@ -102,7 +114,7 @@ export default function LocationsListScreen() {
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
             styles.content,
-            { paddingTop: 12, paddingBottom: insets.bottom + 16 },
+            { paddingTop: contentTopPadding, paddingBottom: insets.bottom + 16 },
           ]}
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
@@ -110,6 +122,25 @@ export default function LocationsListScreen() {
             <LocationCard location={item} index={index} size={LocationCellSize.Grid} />
           )}
         />
+      )}
+
+      {/* Flutua sobre a área do header (que fica vazia com a busca aberta), assim a lista continua rolando por baixo do header transparente. */}
+      {isSearchOpen && (
+        <View
+          style={[
+            styles.searchBar,
+            { top: isIOS ? insets.top : insets.top + (HEADER_CONTENT_HEIGHT - SEARCH_BAR_HEIGHT) / 2 },
+          ]}
+        >
+          <SearchBar
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search locations"
+            onClear={closeSearch}
+            alwaysShowClear
+            autoFocus
+          />
+        </View>
       )}
     </View>
   );
@@ -120,8 +151,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchBar: {
-    alignSelf: 'stretch',
+    position: 'absolute',
+    left: 0,
+    right: 0,
     paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+  },
+  stateWrapper: {
+    alignSelf: 'stretch',
+    backgroundColor: 'transparent',
   },
   content: {
     gap: 12,
