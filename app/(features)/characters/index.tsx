@@ -12,12 +12,6 @@ import { getCharacterRepository } from '@/services/composition/repositories';
 
 const HEADER_CONTENT_HEIGHT = 44;
 
-// scroll view -> renderiza todos os filhos de uma vez, mesmo os que estão fora da tela
-
-// flat list -> é construída em cima da ScrollView e renderiza só os 
-// itens visíveis e uns poucos ao redor
-
-
 export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];

@@ -6,13 +6,6 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/shared/useColorScheme';
 
-// esse arquivo engloba a raiz do app inteiro 
-// monta o Stack (o navigator principal, tipo pilha),
-// faz o trabalho de startup (carregar fontes, controlar a splash screen, aplicar o ThemeProvider claro/escuro),
-// declara (tabs) como uma tela dentro desse Stack, 
-// com headerShown: false (porque a tab bar cuida da própria navegação, não precisa do header do Stack por cima).
-
-
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary
