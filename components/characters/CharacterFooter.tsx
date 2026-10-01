@@ -13,7 +13,7 @@ export const CharacterFooter = ({ character, width }: CharacterFooterProps) => {
     <View style={dynamicStyles.container(width)}>
       <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
         {character.name}
-        </Text>
+      </Text>
       <StatusPill status={character.status} />
     </View>
   );
