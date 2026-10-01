@@ -44,17 +44,16 @@ Modify:
 1. Header: back button + title "Season N" (green, 22px) and subtitle "X episodes" (secondary, 12px), as in the PNG.
 2. Scrollable list (`FlatList`), one `EpisodeRow` per episode ordered by `episodeNumber`.
 3. `EpisodeRow` (not pressable): a 36x36 circle (`Surfaces.surface` (`@/constants/Surfaces`)) containing a TV icon (`SymbolView`: ios `tv.fill`, android `tv`, web `tv`, green), then a vertical text block: **title** = episode name (bold 15, brown), **subtitle** = `airDate` as returned by the API (11px, weight 500, `rgb(95, 99, 100)`). Bottom divider 1px `Surfaces.border` (`@/constants/Surfaces`). Same title/subtitle look as `LocationCard`.
-4. The view model calls `loadAllEpisodes()` only when `repository.episodes` is empty, then `getEpisodesBySeason(season)`.
+4. The view model calls `loadAllEpisodes()` only when `repository.episodes` is empty, then `getEpisodesBySeason(season)`. Never call it otherwise: it has no concurrency guard and appends duplicates if called twice (known debt, do not fix here).
 5. `season` param: parse with `Number`; if not an integer >= 1, or the season has no episodes, show the error state with a clear message (do not crash).
 6. Loading: `ActivityIndicator`. Error: message + "Try again" that re-runs the load.
 
 ## Acceptance criteria
 
 - [ ] `npx tsc --noEmit` clean.
-- [ ] Season 1 opens a list of 11 rows, each with TV-in-circle, name, and air date.
-- [ ] Header shows "Season 1" and "11 episodes".
-- [ ] Navigating to `/seasons/abc` and `/seasons/99` shows an error state, no crash.
-- [ ] Airplane mode on first load shows the error state; "Try again" recovers when back online.
+- [ ] Only the files under **Allowed files** changed.
+- [ ] Invalid `season` param and empty season both resolve to the error state in the view model (no throw).
+- [ ] Loading, error (with retry), and loaded states are all rendered.
 
 ## Commit plan
 

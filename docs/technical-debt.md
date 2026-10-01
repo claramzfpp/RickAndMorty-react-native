@@ -109,3 +109,13 @@ Extrair o bloco para um view model genérico depois do item 3, para servir às d
 ### Ao retomar
 
 É uma decisão de arquitetura que afeta toda a camada de dados. Avaliar junto com a opção B do item 1 (classe base de repositório paginado), separando um repositório com estado de consultas sem estado. Não misturar com PRs de feature.
+
+---
+
+## 3. `loadAllEpisodes()` sem guarda de concorrência
+
+- **Origem:** revisão dos specs de feature.
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+[EpisodeRepositoryImpl.ts](../services/data/repositoryImplementation/EpisodeRepositoryImpl.ts) concatena os episódios a cada chamada e não tem o guard `inFlight` dos outros repositórios. Duas chamadas simultâneas (ou repetidas) duplicam a lista. Hoje os view models só chamam quando `episodes` está vazio, o que evita o problema na prática. Correção futura: reaproveitar a promise em andamento e ignorar chamadas quando já carregou.

@@ -8,9 +8,9 @@ Paste one per agent/worktree. Create each worktree from an up-to-date `main` (af
 Implement docs/features/<spec>.md.
 Read AGENTS.md and docs/workflow.md first, then follow the spec exactly.
 Stay within the spec's "Allowed files"; if you need anything else, stop and report.
-Do not install packages. Validate with `npx tsc --noEmit`.
-When done, open the design image named in the spec and compare it with your result,
-then summarize which acceptance criteria you verified and how.
+Do not install packages. Validate with `npx tsc --noEmit` only; do not run the app.
+Use the design image named in the spec as a visual reference while building.
+When done, summarize what you built and any deviation or doubt.
 ```
 
 ## Per spec
@@ -22,6 +22,6 @@ then summarize which acceptance criteria you verified and how.
 | `feat/02-character-details` | `02-character-details` |
 | `feat/03-location-details` | `03-location-details` |
 | `feat/04-favorites-screen` | `04-favorites-screen` |
-| `feat/05-card-navigation` (only if approved) | `05-card-navigation` |
+| `feat/05-card-navigation` | `05-card-navigation` |
 
 Add to the 00 prompt: "`@react-native-async-storage/async-storage` is already installed; do not touch package.json."

@@ -69,16 +69,17 @@ No existing screen, card, or UI component is modified. `constants/Colors.ts` is 
 
 ## Behavior
 
-1. `FavoritesRepositoryImpl` stores one JSON array of numbers under the key `favorites:characters:v1`. Ids are deduplicated on write. A stored value that is not valid JSON or not an array of positive integers is treated as an empty list (comment why: corrupt storage must not crash the app). Errors thrown by AsyncStorage itself are **not** swallowed; they propagate.
-2. `getCharactersByIds`: empty input -> `[]` with no request. Otherwise `GET /character/<id1>,<id2>,...`. The API returns a single object (not an array) when one id is requested; normalize to an array. A 404 resolves to `[]`; other non-OK responses throw `HttpError`. Map with `CharacterMapper.toDomain`. Preserve the order of the requested ids.
+1. `FavoritesRepositoryImpl` stores one JSON array of numbers under the key `favorites:characters:v1`. Ids are deduplicated on write and kept in insertion order (oldest first). `add`/`remove` are read-modify-write, so serialize all writes through a single promise chain inside the implementation; two quick calls must never lose an update. A stored value that is not valid JSON or not an array of positive integers is treated as an empty list (comment why: corrupt storage must not crash the app). Errors thrown by AsyncStorage itself are **not** swallowed; they propagate.
+2. `getCharactersByIds`: empty input -> `[]` with no request. Otherwise `GET /character/<id1>,<id2>,...`. The API returns a single object (not an array) when one id is requested; normalize to an array. A 404 resolves to `[]`; other non-OK responses throw `HttpError`. Deduplicate the requested ids first. The API returns results sorted by id and ignores the requested order, so reorder client-side to match the order of `ids`. Map with `CharacterMapper.toDomain`.
 3. Stubs are only placeholders; later specs overwrite them completely.
 
 ## Acceptance criteria
 
 - [ ] `npx tsc --noEmit` clean.
-- [ ] App launches and behaves exactly as before. Opening `/characters/1`, `/locations/1`, `/seasons/1` by URL (deep link or `router.push` from a temporary local call, not committed) shows the correct stub.
-- [ ] `getCharactersByIds([])` resolves to `[]` and makes no request (confirm by reading the code path).
-- [ ] No changes to `package.json` or `package-lock.json`.
+- [ ] Only the files under **Allowed files** changed; `package.json` and the lockfile are untouched.
+- [ ] `getCharactersByIds([])` returns `[]` before any `fetch` call (code path).
+- [ ] The single-object response for one id is normalized to an array.
+- [ ] All `FavoritesRepositoryImpl` writes go through the serialized chain.
 
 ## Commit plan
 

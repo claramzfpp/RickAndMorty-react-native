@@ -31,7 +31,7 @@ Fonts in the design are Space Grotesk / Work Sans; the app currently uses system
 ## Details screen anatomy (character and location)
 
 - Full-bleed hero (character: photo, 390x340; location: 390x260 `surface` background with a centered 72px icon in pink).
-- Floating circular buttons over the hero, 40x40, fill `#FFFFFFE6`: back (top-left) and, for characters, favorite heart (top-right). Reuse `HeaderCircleButton` / `headerBackButtonItem` where possible.
+- Transparent native header over the hero (`headerTransparent: true`, same pattern as `app/(features)/characters/index.tsx`): back via the existing `headerBackButtonItem` (top-left) and, for characters, a favorite heart as a header-right custom item (top-right) following `headerSearchButtonItem`. `HeaderCircleButton` has a fixed color and must not be edited, so the heart is a new component that copies its look and turns pink when filled. The hero starts at the very top of the screen (no top padding). The PNG's 40px white circles are approximated by these; the owner polishes visuals manually.
 - Bottom **sheet** overlapping the hero: `gray` background, top corners radius 24, padding `24/20/20/20`, vertical gap 16.
   - Title: 26px, green, display style. Character: name + `StatusPill` on the same row.
   - **Info grid**: row of tiles, gap 12, each tile `surface` background, radius 14, padding 14, vertical gap 8: icon (18, green), label (11px, 600, secondary), value (13px, 600, primary). Character: Species / Gender / Origin (3 tiles). Location: Type / Dimension (2 tiles).

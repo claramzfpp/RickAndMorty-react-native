@@ -1,10 +1,10 @@
-# 05 — Card navigation wiring (OPTIONAL, edits existing files)
+# 05 — Card navigation wiring (edits existing files)
 
 - **Branch:** `feat/05-card-navigation`
 - **Depends on:** 00
 - **Design reference:** none
 
-> Requires explicit approval from the project owner: it is the only spec that edits existing screens/components. It adds behavior only (`onPress`); **no visual change**.
+> Approved by the project owner. It is the only spec that edits existing screens/components, which is why it ships as its own small PR, separate from 00. It adds behavior only (`onPress`); **no visual change**.
 
 ## Goal
 
@@ -36,8 +36,7 @@ Modify (pass `onPress` only):
 ## Acceptance criteria
 
 - [ ] `npx tsc --noEmit` clean.
-- [ ] Character cards (Discover and See all), location cards (both), season cards 1-5 open the right screen.
-- [ ] No visual difference on any existing screen.
+- [ ] `git diff` shows only `onPress` additions and the `router` import in the listed files.
 
 ## Commit plan
 

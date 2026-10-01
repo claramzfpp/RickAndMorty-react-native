@@ -47,21 +47,20 @@ Modify:
 
 ## Behavior
 
-1. Layout follows the PNG: hero photo (`character.image`, cover), floating back button (top-left), floating favorite button (top-right), bottom sheet with name + `StatusPill`, then three `InfoTile`s: Species, Gender, Origin. Accent bar at the bottom.
+1. Layout follows the PNG: hero photo (`character.image`, cover) under a transparent native header with back (existing `headerBackButtonItem`) and the favorite heart as a header-right custom item (see `docs/ui-guidelines.md`), bottom sheet with name + `StatusPill`, then three `InfoTile`s: Species, Gender, Origin. Accent bar at the bottom.
 2. `rawId` -> `new CharacterId(Number(rawId))`; if it throws (non-numeric, <= 0) go to the error state.
 3. Load character and `isFavorite` together; show `loading` until both resolve.
-4. `FavoriteButton`: heart outline when not favorite, filled pink heart when favorite (`SymbolView` `heart` / `heart.fill`; android `favorite_border` / `favorite`). Accessibility label "Add to favorites" / "Remove from favorites".
+4. `FavoriteButton` (new component, copies the look of `HeaderCircleButton` without editing it): heart outline when not favorite, filled pink heart when favorite (`SymbolView` `heart` / `heart.fill`; android `favorite_border` / `favorite`). Accessibility label "Add to favorites" / "Remove from favorites".
 5. `toggleFavorite` updates the UI optimistically, then calls `add`/`remove`. If the call fails, roll back the UI and surface the failure (inline message or `Alert`); do not swallow it. Ignore taps while a toggle is in flight.
 6. Error state shows the message and a "Try again" button calling `retry`.
 
 ## Acceptance criteria
 
 - [ ] `npx tsc --noEmit` clean.
-- [ ] Opening a character shows photo, name, status, species, gender, origin matching the data from the list.
-- [ ] Tapping the heart fills it; fully closing and reopening the app and revisiting the same character shows it still filled (persistence).
-- [ ] Tapping again clears it, also persisted.
-- [ ] `/characters/abc` and `/characters/999999` show the error state, no crash.
-- [ ] Rapid double-tap on the heart leaves a consistent state (no duplicate or lost entry).
+- [ ] Only the files under **Allowed files** changed.
+- [ ] Invalid id is caught and becomes the error state (no throw).
+- [ ] `toggleFavorite` is optimistic, rolls back on failure, and ignores calls while one is in flight.
+- [ ] Loading, error (with retry), and loaded states are all rendered.
 
 ## Commit plan
 

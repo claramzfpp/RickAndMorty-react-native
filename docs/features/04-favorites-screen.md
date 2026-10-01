@@ -48,18 +48,18 @@ Modify:
 1. Title "Favorites" and a subtitle "N characters saved" (singular for 1), as in the PNG.
 2. Reload **every time the tab gains focus** (`useFocusEffect` from `expo-router`), so a heart toggled in character details is reflected immediately. Do not show a full-screen spinner on re-focus when data is already displayed; only on the first load.
 3. Flow: `getFavoriteIds()`; if empty -> `empty` without any request; otherwise `getCharactersByIds(ids)`.
-4. Grid: 2 columns, `CharacterCard` (`CharacterCellSize.Grid`); pressing a card navigates to `/characters/<id>`. Bottom padding must clear the custom tab bar (check `components/shared/CustomTabBar.tsx`).
-5. Empty state: "No favorites yet" / "Tap the heart on a character to save it."
-6. Error state with "Try again" calling `reload`. Ids the API no longer knows are omitted (the repository handles it); the subtitle count reflects what is shown.
+4. Order: most recently favorited first (reverse of the stored order; the repository returns ids in insertion order).
+5. Grid: 2 columns, `CharacterCard` (`CharacterCellSize.Grid`); pressing a card navigates to `/characters/<id>`. Bottom padding = `TAB_BAR_OCCUPIED_HEIGHT` (exported by `components/shared/CustomTabBar.tsx`) plus the bottom safe-area inset. Tabs have no header, so add the top safe-area inset (`useSafeAreaInsets`) above the title.
+6. Empty state: "No favorites yet" / "Tap the heart on a character to save it."
+7. Error state with "Try again" calling `reload`. Ids the API no longer knows are omitted (the repository handles it); the subtitle count reflects what is shown.
 
 ## Acceptance criteria
 
 - [ ] `npx tsc --noEmit` clean.
-- [ ] With no favorites the empty state shows and no network request is made.
-- [ ] After favoriting 2 characters in details and switching to the tab, both appear; unfavoriting one and returning removes it.
-- [ ] After fully restarting the app the saved characters still appear.
-- [ ] Airplane mode shows the error state; "Try again" recovers.
-- [ ] Layout matches `docs/design/favorites.png` (title, subtitle, 2-column grid) and nothing is hidden behind the tab bar.
+- [ ] Only the files under **Allowed files** changed.
+- [ ] Empty id list resolves to the `empty` state without calling `getCharactersByIds`.
+- [ ] The data reloads on every focus without a full-screen spinner when data is already shown.
+- [ ] Loading, error (with retry), empty, and loaded states are all rendered.
 
 ## Commit plan
 
