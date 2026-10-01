@@ -17,6 +17,7 @@ export default function LocationsListScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
+  const contentTopPadding = isIOS ? headerHeight + 16 : 16;
   const { state, loadMore } = useLocationListViewModel(getLocationRepository());
 
   return (
@@ -35,8 +36,8 @@ export default function LocationsListScreen() {
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
       }} />
 
-      {state.status === 'loading' && <ActivityIndicator />}
-      {state.status === 'error' && <Text>{state.message}</Text>}
+      {state.status === 'loading' && <ActivityIndicator style={{ marginTop: contentTopPadding }} />}
+      {state.status === 'error' && <Text style={{ marginTop: contentTopPadding }}>{state.message}</Text>}
 
       {state.status === 'loaded' && (
         <FlatList
@@ -57,7 +58,7 @@ export default function LocationsListScreen() {
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
             styles.content,
-            { paddingTop: isIOS ? headerHeight + 16 : 16, paddingBottom: insets.bottom + 16 },
+            { paddingTop: contentTopPadding, paddingBottom: insets.bottom + 16 },
           ]}
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
