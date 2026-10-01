@@ -1,5 +1,6 @@
 import { Location } from '@/services/domain/model/Location';
 import { LocationId } from '@/services/domain/model/LocationId';
+import { PagedResult } from '@/services/domain/model/PagedResult';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
 import { LocationMapper } from '@/services/data/mapper/LocationMapper';
 import { RMLocation } from '@/services/data/remote/locations/RMLocation';
@@ -49,8 +50,8 @@ export class LocationRepositoryImpl implements LocationRepository {
         return request;
     }
 
-    searchLocationsByName(name: string): Promise<Location[]> {
-        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=1`;
+    searchLocationsByName(name: string, page?: number): Promise<PagedResult<Location>> {
+        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page ?? 1}`;
 
         return fetch(url)
             .then(response => {
@@ -62,12 +63,23 @@ export class LocationRepositoryImpl implements LocationRepository {
                 }
                 return response.json() as Promise<GetAllLocationsResponse>;
             })
-            .then(data => {
+            .then((data): PagedResult<Location> => {
                 if (data === null) {
-                    return [];
+                    return { items: [], nextPage: null };
                 }
-                return data.results.map(LocationMapper.toDomain);
+                return {
+                    items: data.results.map(LocationMapper.toDomain),
+                    nextPage: LocationRepositoryImpl.parsePage(data.info.next),
+                };
             });
+    }
+
+    private static parsePage(nextUrl: string | null): number | null {
+        if (nextUrl === null) {
+            return null;
+        }
+        const match = /[?&]page=(\d+)/.exec(nextUrl);
+        return match === null ? null : Number(match[1]);
     }
 
     getLocationById(id: LocationId): Promise<Location> {

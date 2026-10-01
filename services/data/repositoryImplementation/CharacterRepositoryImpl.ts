@@ -1,5 +1,6 @@
 import { Character } from '../../domain/model/Character';
 import { CharacterId } from '../../domain/model/CharacterId';
+import { PagedResult } from '../../domain/model/PagedResult';
 import { CharacterRepository } from '../../domain/repository/CharacterRepository';
 import { CharacterMapper } from '../mapper/CharacterMapper';
 import { RMCharacter } from '../remote/characters/RMCharacter';
@@ -49,8 +50,8 @@ export class CharacterRepositoryImpl implements CharacterRepository {
         return request;
     }
 
-    searchCharacters(name: string): Promise<Character[]> {
-        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=1`;
+    searchCharacters(name: string, page?: number): Promise<PagedResult<Character>> {
+        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page ?? 1}`;
 
         return fetch(url)
             .then(response => {
@@ -62,12 +63,23 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 }
                 return response.json() as Promise<GetAllCharactersResponse>;
             })
-            .then(data => {
+            .then((data): PagedResult<Character> => {
                 if (data === null) {
-                    return [];
+                    return { items: [], nextPage: null };
                 }
-                return data.results.map(CharacterMapper.toDomain);
+                return {
+                    items: data.results.map(CharacterMapper.toDomain),
+                    nextPage: CharacterRepositoryImpl.parsePage(data.info.next),
+                };
             });
+    }
+
+    private static parsePage(nextUrl: string | null): number | null {
+        if (nextUrl === null) {
+            return null;
+        }
+        const match = /[?&]page=(\d+)/.exec(nextUrl);
+        return match === null ? null : Number(match[1]);
     }
 
     getCharacterById(id: CharacterId): Promise<Character> {
