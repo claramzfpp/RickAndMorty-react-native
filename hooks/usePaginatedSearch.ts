@@ -107,6 +107,8 @@ export function usePaginatedSearch<T>(
                 );
             })
             .finally(() => {
+                // A superseded request must not clear the flag of a newer one;
+                // the effect already reset it when the query/retry changed.
                 if (requestId === requestIdRef.current) {
                     isLoadingMoreRef.current = false;
                 }

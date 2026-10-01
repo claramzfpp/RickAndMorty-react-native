@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useColorScheme } from './useColorScheme';
 
-/** Faixa de blur sobre a safe area superior, para o conteúdo que rola por baixo não colidir com a status bar. Não captura toques. */
+/** Blur strip over the top safe area so content scrolling underneath doesn't collide with the status bar. Doesn't capture touches. */
 export const SafeAreaBlur = () => {
   const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();

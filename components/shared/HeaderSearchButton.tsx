@@ -13,7 +13,7 @@ export const HeaderSearchButton = ({ onPress, isActive = false }: HeaderSearchBu
   />
 );
 
-/** Item para `unstable_headerRightItems`; mesmo estilo do `headerBackButtonItem`. */
+/** Item for `unstable_headerRightItems`; same style as `headerBackButtonItem`. */
 export const headerSearchButtonItem = (onPress: () => void, isActive = false) => ({
   type: 'custom' as const,
   element: <HeaderSearchButton onPress={onPress} isActive={isActive} />,

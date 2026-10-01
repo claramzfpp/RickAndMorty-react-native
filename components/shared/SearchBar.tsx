@@ -11,14 +11,15 @@ export interface SearchBarProps {
     placeholder: string;
     onClear?: () => void;
     autoFocus?: boolean;
-    /** Mantém o botão de limpar visível mesmo com o campo vazio (ex.: quando ele também fecha a busca). */
+    /** Keeps the clear button visible even when the field is empty (e.g. when it also closes the search). */
     alwaysShowClear?: boolean;
 }
 
 export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus, alwaysShowClear }: SearchBarProps) => {
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({ light: 'rgb(235, 235, 235)', dark: 'rgb(38, 38, 38)' }, 'background');
-    const iconColor = useThemeColor({}, 'gray');
+    // Darker/lighter than the theme gray so icons and placeholder keep contrast on the pill background.
+    const iconColor = useThemeColor({ light: 'rgb(100, 100, 100)', dark: 'rgb(160, 160, 160)' }, 'gray');
 
     const handleClear = () => {
         onChangeText('');
@@ -37,6 +38,7 @@ export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus
                 onChangeText={onChangeText}
                 placeholder={placeholder}
                 placeholderTextColor={iconColor}
+                accessibilityLabel={placeholder}
                 style={[styles.input, { color: textColor }]}
                 returnKeyType="search"
                 autoCorrect={false}
@@ -69,6 +71,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         height: '100%',
+        paddingVertical: 0,
     },
 });
 

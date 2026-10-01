@@ -7,6 +7,7 @@ import { RMCharacter } from '../remote/characters/RMCharacter';
 import { GetAllCharactersResponse } from '../remote/characters/GetAllCharactersResponse';
 import { HttpError } from '../remote/HttpError';
 import { RICK_AND_MORTY_BASE_URL } from '../remote/ApiConfig';
+import { parseNextPage } from '../pagination/parseNextPage';
 
 export class CharacterRepositoryImpl implements CharacterRepository {
     private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/character`;
@@ -50,8 +51,8 @@ export class CharacterRepositoryImpl implements CharacterRepository {
         return request;
     }
 
-    searchCharacters(name: string, page?: number): Promise<PagedResult<Character>> {
-        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page ?? 1}`;
+    searchCharacters(name: string, page = 1): Promise<PagedResult<Character>> {
+        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page}`;
 
         return fetch(url)
             .then(response => {
@@ -69,17 +70,9 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 }
                 return {
                     items: data.results.map(CharacterMapper.toDomain),
-                    nextPage: CharacterRepositoryImpl.parsePage(data.info.next),
+                    nextPage: parseNextPage(data.info.next),
                 };
             });
-    }
-
-    private static parsePage(nextUrl: string | null): number | null {
-        if (nextUrl === null) {
-            return null;
-        }
-        const match = /[?&]page=(\d+)/.exec(nextUrl);
-        return match === null ? null : Number(match[1]);
     }
 
     getCharacterById(id: CharacterId): Promise<Character> {

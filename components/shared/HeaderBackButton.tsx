@@ -13,7 +13,7 @@ export const HeaderBackButton = ({ onPress }: HeaderBackButtonProps) => (
   />
 );
 
-/** Item para `unstable_headerLeftItems`; `hidesSharedBackground` remove o fundo de vidro nativo do iOS 26 que duplicaria o fundo do botão. */
+/** Item for `unstable_headerLeftItems`; `hidesSharedBackground` removes the native iOS 26 glass background that would duplicate the button's own background. */
 export const headerBackButtonItem = (onPress: () => void) => ({
   type: 'custom' as const,
   element: <HeaderBackButton onPress={onPress} />,

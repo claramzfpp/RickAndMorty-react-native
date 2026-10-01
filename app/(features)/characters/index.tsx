@@ -21,6 +21,13 @@ import { getCharacterRepository } from '@/services/composition/repositories';
 
 const SEARCH_BAR_HEIGHT = 44;
 
+// Normalized shape of the list/search states, shared by the rendering below.
+type ScreenState =
+  | { status: 'loading' }
+  | { status: 'empty' }
+  | { status: 'error'; message: string }
+  | { status: 'loaded'; items: Character[]; isLoadingMore: boolean; loadMoreError?: string };
+
 export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
@@ -42,11 +49,6 @@ export default function CharactersListScreen() {
   const loadMore = isSearching ? search.loadMore : list.loadMore;
 
   // Normalize list/search states into one shape so the rendering below is shared.
-  type ScreenState =
-    | { status: 'loading' }
-    | { status: 'empty' }
-    | { status: 'error'; message: string }
-    | { status: 'loaded'; items: Character[]; isLoadingMore: boolean; loadMoreError?: string };
   let view: ScreenState;
   if (isSearching) {
     const s = search.state;
@@ -68,6 +70,8 @@ export default function CharactersListScreen() {
         },
       ]}
     >
+      {/* `unstable_headerRightItems` (an unstable expo-router API) renders native header items on iOS;
+          `headerRight` is the fallback for platforms that ignore it. Keep both in sync. */}
       <Stack.Screen options={{
         title: '',
         headerTransparent: true,
@@ -80,7 +84,7 @@ export default function CharactersListScreen() {
       {view.status === 'loading' && <SearchLoadingState topOffset={contentTopPadding} />}
       {view.status === 'empty' && (
         <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
-          <SearchEmptyState query={debouncedQuery.trim()} />
+          <SearchEmptyState query={debouncedQuery.trim()} subject="Characters" />
         </View>
       )}
       {view.status === 'error' && (
@@ -104,12 +108,12 @@ export default function CharactersListScreen() {
             view.isLoadingMore ? (
               <ActivityIndicator />
             ) : view.loadMoreError !== undefined ? (
-              <Pressable onPress={loadMore}>
-                <Text>Tentar novamente</Text>
+              <Pressable onPress={loadMore} accessibilityRole="button" accessibilityLabel="Try again">
+                <Text>Try again</Text>
               </Pressable>
             ) : null
           }
-          keyExtractor={(item) => item.id.value.toString()}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
@@ -124,7 +128,7 @@ export default function CharactersListScreen() {
         />
       )}
 
-      {/* Flutua sobre a área do header (que fica vazia com a busca aberta), assim a lista continua rolando por baixo do header transparente. */}
+      {/* Floats over the header area (empty while search is open) so the list keeps scrolling under the transparent header. */}
       {isSearchOpen && (
         <View
           style={[

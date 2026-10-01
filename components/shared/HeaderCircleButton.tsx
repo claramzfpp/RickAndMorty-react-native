@@ -1,7 +1,6 @@
 import { SymbolView, SymbolViewProps } from 'expo-symbols';
 import { Pressable, StyleSheet, View as RNView } from 'react-native';
 
-import { View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 
@@ -12,7 +11,7 @@ interface HeaderCircleButtonProps {
   symbol: SymbolViewProps['name'];
   accessibilityLabel: string;
   onPress: () => void;
-  /** Compensa o centro óptico de símbolos assimétricos (ex.: chevron). */
+  /** Compensates the optical center of asymmetric symbols (e.g. chevron). */
   iconPaddingRight?: number;
 }
 
@@ -26,7 +25,9 @@ export const HeaderCircleButton = ({
   const colors = Colors[colorScheme];
 
   return (
-    <View style={styles.wrapper}>
+    // The shadow lives on the outer wrapper; the inner view clips with overflow: 'hidden',
+    // which would otherwise cut the shadow off.
+    <RNView style={styles.shadow}>
       <RNView
         style={[
           styles.blur,
@@ -48,21 +49,18 @@ export const HeaderCircleButton = ({
           <SymbolView name={symbol} tintColor={colors.brown} size={18} />
         </Pressable>
       </RNView>
-    </View>
+    </RNView>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
+  shadow: {
     alignSelf: 'center',
     borderRadius: BUTTON_SIZE / 2,
-    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
-    elevation: 8,
-    marginLeft: 0,
   },
   blur: {
     borderRadius: BUTTON_SIZE / 2,

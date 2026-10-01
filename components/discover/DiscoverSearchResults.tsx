@@ -25,17 +25,18 @@ interface SectionProps<T> {
     section: SearchSection<T>;
     query: string;
     numRows?: 1 | 2;
+    onRetry: () => void;
     renderItem: (item: T, index: number) => ReactNode;
 }
 
-const Section = <T,>({ title, section, query, numRows, renderItem }: SectionProps<T>) => {
+const Section = <T,>({ title, section, query, numRows, onRetry, renderItem }: SectionProps<T>) => {
     switch (section.status) {
         case 'loading':
             return <SearchLoadingState />;
         case 'error':
-            return null;
+            return <SearchErrorState message={section.message} onRetry={onRetry} />;
         case 'empty':
-            return <SearchEmptyState query={query} />;
+            return <SearchEmptyState query={query} subject={title} />;
         case 'loaded':
             return <GenericCarousel title={title} numRows={numRows} content={section.items.map(renderItem)} />;
     }
@@ -55,10 +56,9 @@ export const DiscoverSearchResults = ({
         return <SearchLoadingState />;
     }
 
-    // A single retry reloads both sections, so one error state covers either failure.
-    const failed = [characters, locations].find((section) => section.status === 'error');
-    if (failed?.status === 'error') {
-        return <SearchErrorState message={failed.message} onRetry={onRetry} />;
+    // Full-screen error only when both fail; otherwise the failed section shows inline.
+    if (characters.status === 'error' && locations.status === 'error') {
+        return <SearchErrorState message={characters.message} onRetry={onRetry} />;
     }
 
     return (
@@ -67,6 +67,7 @@ export const DiscoverSearchResults = ({
                 title="Characters"
                 section={characters}
                 query={query}
+                onRetry={onRetry}
                 renderItem={(character) => (
                     <CharacterCard key={character.id.toString()} character={character} size={CharacterCellSize.Discover} />
                 )}
@@ -76,6 +77,7 @@ export const DiscoverSearchResults = ({
                 section={locations}
                 query={query}
                 numRows={2}
+                onRetry={onRetry}
                 renderItem={(location, index) => (
                     <LocationCard
                         key={location.id.toString()}

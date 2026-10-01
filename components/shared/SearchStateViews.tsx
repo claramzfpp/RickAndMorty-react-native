@@ -1,31 +1,62 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 
-export const SearchEmptyState = ({ query }: { query: string }) => (
-    <View style={styles.container}>
-        <Text style={styles.message}>{`Nenhum resultado para “${query}”`}</Text>
-    </View>
-);
+// These views render on the screens' gray background (the same in light and dark),
+// so the text uses the dark brown for contrast instead of the theme's text color.
+const useStateColors = () => Colors[useColorScheme()];
+
+export interface SearchEmptyStateProps {
+    query: string;
+    /** Plural noun for what was searched (e.g. "Characters"); omitted yields a generic message. */
+    subject?: string;
+}
+
+export const SearchEmptyState = ({ query, subject }: SearchEmptyStateProps) => {
+    const colors = useStateColors();
+    const message = subject !== undefined
+        ? `No ${subject.toLowerCase()} found for “${query}”`
+        : `No results for “${query}”`;
+
+    return (
+        <View style={styles.container}>
+            <Text style={[styles.message, { color: colors.brown }]} accessibilityRole="alert">{message}</Text>
+        </View>
+    );
+};
 
 export interface SearchErrorStateProps {
     message: string;
     onRetry: () => void;
 }
 
-export const SearchErrorState = ({ message, onRetry }: SearchErrorStateProps) => (
-    <View style={styles.container}>
-        <Text style={styles.message}>{message}</Text>
-        <Pressable onPress={onRetry} style={({ pressed }) => [styles.retry, pressed && styles.pressed]}>
-            <Text style={styles.retryText}>Tentar novamente</Text>
-        </Pressable>
-    </View>
-);
+export const SearchErrorState = ({ message, onRetry }: SearchErrorStateProps) => {
+    const colors = useStateColors();
 
-export const SearchLoadingState = ({ topOffset = 0 }: { topOffset?: number }) => (
-    <View style={[styles.container, { paddingTop: topOffset }]}>
-        <ActivityIndicator color={Colors.light.gray} />
-    </View>
-);
+    return (
+        <View style={styles.container}>
+            <Text style={[styles.message, { color: colors.brown }]} accessibilityRole="alert">{message}</Text>
+            <Pressable
+                onPress={onRetry}
+                accessibilityRole="button"
+                accessibilityLabel="Try again"
+                style={({ pressed }) => [styles.retry, { backgroundColor: colors.green }, pressed && styles.pressed]}
+            >
+                <Text style={[styles.retryText, { color: colors.brown }]}>Try again</Text>
+            </Pressable>
+        </View>
+    );
+};
+
+export const SearchLoadingState = ({ topOffset = 0 }: { topOffset?: number }) => {
+    const colors = useStateColors();
+
+    return (
+        <View style={[styles.container, { paddingTop: topOffset }]}>
+            <ActivityIndicator color={colors.brown} accessibilityRole="progressbar" accessibilityLabel="Loading results" />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -36,19 +67,16 @@ const styles = StyleSheet.create({
     },
     message: {
         fontSize: 15,
-        color: Colors.light.gray,
         textAlign: 'center',
     },
     retry: {
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 16,
-        backgroundColor: Colors.light.green,
     },
     retryText: {
         fontSize: 14,
         fontWeight: '700',
-        color: Colors.light.brown,
     },
     pressed: {
         opacity: 0.7,

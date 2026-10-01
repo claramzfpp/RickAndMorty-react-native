@@ -7,6 +7,7 @@ import { RMLocation } from '@/services/data/remote/locations/RMLocation';
 import { GetAllLocationsResponse } from '@/services/data/remote/locations/GetAllLocationsResponse';
 import { HttpError } from '@/services/data/remote/HttpError';
 import { RICK_AND_MORTY_BASE_URL } from '@/services/data/remote/ApiConfig';
+import { parseNextPage } from '@/services/data/pagination/parseNextPage';
 
 export class LocationRepositoryImpl implements LocationRepository {
     private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/location`;
@@ -50,8 +51,8 @@ export class LocationRepositoryImpl implements LocationRepository {
         return request;
     }
 
-    searchLocationsByName(name: string, page?: number): Promise<PagedResult<Location>> {
-        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page ?? 1}`;
+    searchLocationsByName(name: string, page = 1): Promise<PagedResult<Location>> {
+        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page}`;
 
         return fetch(url)
             .then(response => {
@@ -69,17 +70,9 @@ export class LocationRepositoryImpl implements LocationRepository {
                 }
                 return {
                     items: data.results.map(LocationMapper.toDomain),
-                    nextPage: LocationRepositoryImpl.parsePage(data.info.next),
+                    nextPage: parseNextPage(data.info.next),
                 };
             });
-    }
-
-    private static parsePage(nextUrl: string | null): number | null {
-        if (nextUrl === null) {
-            return null;
-        }
-        const match = /[?&]page=(\d+)/.exec(nextUrl);
-        return match === null ? null : Number(match[1]);
     }
 
     getLocationById(id: LocationId): Promise<Location> {
