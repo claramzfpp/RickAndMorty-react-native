@@ -15,14 +15,20 @@ export class LocationRepositoryImpl implements LocationRepository {
     locations: Location[] = [];
     hasNextPage = true;
 
+    private inFlight: Promise<void> | null = null;
+
     loadNextPage(): Promise<void> {
+        if (this.inFlight !== null) {
+            return this.inFlight;
+        }
+
         if (!this.hasNextPage || this.nextUrl === null) {
             return Promise.resolve();
         }
 
         const url = this.nextUrl;
 
-        return fetch(url)
+        const request = fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new HttpError(response.status);
@@ -34,7 +40,13 @@ export class LocationRepositoryImpl implements LocationRepository {
                 this.hasNextPage = data.info.next !== null;
 
                 this.locations = this.locations.concat(data.results.map(LocationMapper.toDomain));
+            })
+            .finally(() => {
+                this.inFlight = null;
             });
+
+        this.inFlight = request;
+        return request;
     }
 
     searchLocationsByName(name: string): Promise<Location[]> {

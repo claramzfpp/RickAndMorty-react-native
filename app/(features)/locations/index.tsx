@@ -1,9 +1,9 @@
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LocationCard, LocationCellSize } from '@/components/locationsCarousel/LocationCard';
-import { useLocationCarouselViewModel } from '@/components/locationsCarousel/locationCarouselViewModel';
+import { useLocationListViewModel } from '@/components/locationsCarousel/locationListViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
@@ -16,7 +16,7 @@ export default function LocationsListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const state = useLocationCarouselViewModel(getLocationRepository());
+  const { state, loadMore } = useLocationListViewModel(getLocationRepository());
 
   return (
     <View
@@ -36,7 +36,18 @@ export default function LocationsListScreen() {
 
       {state.status === 'loaded' && (
         <FlatList
-          data={state.locationsArray}
+          data={state.locations}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            state.isLoadingMore ? (
+              <ActivityIndicator />
+            ) : state.loadMoreError !== undefined ? (
+              <Pressable onPress={loadMore}>
+                <Text>Tentar novamente</Text>
+              </Pressable>
+            ) : null
+          }
           keyExtractor={(location) => location.id.value.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
