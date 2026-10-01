@@ -11,10 +11,9 @@ export interface CharacterFooterProps {
 export const CharacterFooter = ({ character, width }: CharacterFooterProps) => {
   return (
     <View style={dynamicStyles.container(width)}>
-      <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail" >
+      <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
         {character.name}
         </Text>
-        
       <StatusPill status={character.status} />
     </View>
   );
