@@ -8,6 +8,7 @@ import { CharacterCard, CharacterCellSize } from '@/components/characters/Charac
 import { useCharacterListViewModel } from '@/components/characters/charactersCarousel/characterListViewModel';
 import { useCharacterSearchViewModel } from '@/components/characters/charactersCarousel/characterSearchViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
+import { HeaderSearchButton, headerSearchButtonItem } from '@/components/shared/HeaderSearchButton';
 import { SearchBar } from '@/components/shared/SearchBar';
 import { SearchEmptyState, SearchErrorState, SearchLoadingState } from '@/components/shared/SearchStateViews';
 import { Text, View } from '@/components/shared/Themed';
@@ -25,7 +26,12 @@ export default function CharactersListScreen() {
   const headerHeight = useHeaderHeight();
   const contentTopPadding = isIOS ? headerHeight + 16 : 16;
   const repository = getCharacterRepository();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const toggleSearch = () => {
+    if (isSearchOpen) setQuery('');
+    setIsSearchOpen((open) => !open);
+  };
   const debouncedQuery = useDebouncedValue(query);
   const isSearching = debouncedQuery.trim() !== '';
   const list = useCharacterListViewModel(repository);
@@ -63,15 +69,22 @@ export default function CharactersListScreen() {
         title: '',
         headerTransparent: true,
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
+        unstable_headerRightItems: () => [headerSearchButtonItem(toggleSearch, isSearchOpen)],
+        headerRight: () => <HeaderSearchButton onPress={toggleSearch} isActive={isSearchOpen} />,
       }} />
 
-      <View style={[styles.searchBar, { paddingTop: contentTopPadding }]}>
-        <SearchBar
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search characters"
-        />
-      </View>
+      {isSearchOpen ? (
+        <View style={[styles.searchBar, { paddingTop: contentTopPadding }]}>
+          <SearchBar
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search characters"
+            autoFocus
+          />
+        </View>
+      ) : (
+        <View style={{ height: contentTopPadding - 16 }} />
+      )}
 
       {view.status === 'loading' && <SearchLoadingState />}
       {view.status === 'empty' && <SearchEmptyState query={debouncedQuery.trim()} />}

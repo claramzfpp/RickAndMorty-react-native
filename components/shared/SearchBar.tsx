@@ -10,9 +10,10 @@ export interface SearchBarProps {
     onChangeText: (text: string) => void;
     placeholder: string;
     onClear?: () => void;
+    autoFocus?: boolean;
 }
 
-export const SearchBar = ({ value, onChangeText, placeholder, onClear }: SearchBarProps) => {
+export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus }: SearchBarProps) => {
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({ light: 'rgb(235, 235, 235)', dark: 'rgb(38, 38, 38)' }, 'background');
     const iconColor = useThemeColor({}, 'gray');
@@ -38,6 +39,7 @@ export const SearchBar = ({ value, onChangeText, placeholder, onClear }: SearchB
                 returnKeyType="search"
                 autoCorrect={false}
                 autoCapitalize="none"
+                autoFocus={autoFocus}
             />
             {value.length > 0 && (
                 <Pressable onPress={handleClear} hitSlop={8} accessibilityLabel="Clear search">
