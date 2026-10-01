@@ -17,7 +17,6 @@ export const HeaderBackButton = ({ onPress }: HeaderBackButtonProps) => {
   const colors = Colors[colorScheme];
 
   return (
-    // Wrapper com o mesmo sistema de sombras e bordas arredondadas da sua barra
     <View style={styles.wrapper}>
       <RNView
         style={[
@@ -53,7 +52,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: BUTTON_SIZE / 2,
     overflow: 'hidden',
-    // Mesma sombra exata da sua CustomTabBar
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -72,7 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: (BUTTON_SIZE - BUTTON_INSET * 2) / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    // Ajuste óptico leve para centralizar a seta do chevron perfeitamente
     paddingRight: 2,
   },
 });

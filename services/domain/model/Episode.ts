@@ -28,12 +28,10 @@ export class Episode { // 'data class'/'struct' mapeado
     private static parseSeasonAndEpisode(episodeCode: string): [number, number] {
         const match = this.episodeCodeRegex.exec(episodeCode);
 
-        // Se não encontrar o padrão na Regex, retorna [0, 0]
         if (!match) {
             return [0, 0];
         }
 
-        // match[1] captura o primeiro grupo (\d+) e match[2] o segundo (\d+)
         const season = parseInt(match[1], 10);
         const episodeNumber = parseInt(match[2], 10);
 
