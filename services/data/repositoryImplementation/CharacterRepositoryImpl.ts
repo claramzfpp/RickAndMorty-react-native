@@ -15,14 +15,20 @@ export class CharacterRepositoryImpl implements CharacterRepository {
     characters: Character[] = [];
     hasNextPage = true;
 
+    private inFlight: Promise<void> | null = null;
+
     loadNextPage(): Promise<void> {
+        if (this.inFlight !== null) {
+            return this.inFlight;
+        }
+
         if (!this.hasNextPage || this.nextUrl === null) {
             return Promise.resolve();
         }
 
         const url = this.nextUrl;
 
-        return fetch(url)
+        const request = fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new HttpError(response.status);
@@ -34,7 +40,13 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 this.hasNextPage = data.info.next !== null;
 
                 this.characters = this.characters.concat(data.results.map(CharacterMapper.toDomain));
+            })
+            .finally(() => {
+                this.inFlight = null;
             });
+
+        this.inFlight = request;
+        return request;
     }
 
     searchCharacters(name: string): Promise<Character[]> {

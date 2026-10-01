@@ -1,28 +1,33 @@
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
-import { useCharacterCarouselViewModel } from '@/components/characters/charactersCarousel/characterCarouselViewModel';
+import { useCharacterListViewModel } from '@/components/characters/charactersCarousel/characterListViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
+import { HEADER_CONTENT_HEIGHT, isIOS } from '@/constants/Header';
 import { getCharacterRepository } from '@/services/composition/repositories';
-
-const HEADER_CONTENT_HEIGHT = 44;
 
 export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const state = useCharacterCarouselViewModel(getCharacterRepository());
+  const headerHeight = useHeaderHeight();
+  const contentTopPadding = isIOS ? headerHeight + 16 : 16;
+  const { state, loadMore } = useCharacterListViewModel(getCharacterRepository());
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.gray, paddingTop: insets.top + HEADER_CONTENT_HEIGHT },
+        {
+          backgroundColor: colors.gray,
+          paddingTop: isIOS ? 0 : insets.top + HEADER_CONTENT_HEIGHT,
+        },
       ]}
     >
       <Stack.Screen options={{
@@ -31,16 +36,31 @@ export default function CharactersListScreen() {
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
       }} />
 
-      {state.status === 'loading' && <ActivityIndicator />}
-      {state.status === 'error' && <Text>{state.message}</Text>}
+      {state.status === 'loading' && <ActivityIndicator style={{ marginTop: contentTopPadding }} />}
+      {state.status === 'error' && <Text style={{ marginTop: contentTopPadding }}>{state.message}</Text>}
 
       {state.status === 'loaded' && (
         <FlatList
-          data={state.charactersArray}
+          data={state.characters}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            state.isLoadingMore ? (
+              <ActivityIndicator />
+            ) : state.loadMoreError !== undefined ? (
+              <Pressable onPress={loadMore}>
+                <Text>Tentar novamente</Text>
+              </Pressable>
+            ) : null
+          }
           keyExtractor={(character) => character.id.value.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
-          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
+          contentContainerStyle={[
+            styles.content,
+            { paddingTop: contentTopPadding, paddingBottom: insets.bottom + 16 },
+          ]}
+          scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <CharacterCard character={item} size={CharacterCellSize.Grid} />
@@ -57,7 +77,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    paddingTop: 16,
     gap: 12,
   },
   row: {
