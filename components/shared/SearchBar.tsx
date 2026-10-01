@@ -1,0 +1,88 @@
+import { useState } from 'react';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { SymbolView } from 'expo-symbols';
+import { preview } from "radon-ide";
+import Colors from '@/constants/Colors';
+import { useThemeColor } from './Themed';
+
+export interface SearchBarProps {
+    value: string;
+    onChangeText: (text: string) => void;
+    placeholder: string;
+    onClear?: () => void;
+    autoFocus?: boolean;
+    /** Keeps the clear button visible even when the field is empty (e.g. when it also closes the search). */
+    alwaysShowClear?: boolean;
+}
+
+export const SearchBar = ({ value, onChangeText, placeholder, onClear, autoFocus, alwaysShowClear }: SearchBarProps) => {
+    const textColor = useThemeColor({}, 'text');
+    const backgroundColor = useThemeColor({ light: 'rgb(235, 235, 235)', dark: 'rgb(38, 38, 38)' }, 'background');
+    // Darker/lighter than the theme gray so icons and placeholder keep contrast on the pill background.
+    const iconColor = useThemeColor({ light: 'rgb(100, 100, 100)', dark: 'rgb(160, 160, 160)' }, 'gray');
+
+    const handleClear = () => {
+        onChangeText('');
+        onClear?.();
+    };
+
+    return (
+        <View style={[styles.container, { backgroundColor }]}>
+            <SymbolView
+                name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
+                tintColor={iconColor}
+                size={18}
+            />
+            <TextInput
+                value={value}
+                onChangeText={onChangeText}
+                placeholder={placeholder}
+                placeholderTextColor={iconColor}
+                accessibilityLabel={placeholder}
+                style={[styles.input, { color: textColor }]}
+                returnKeyType="search"
+                autoCorrect={false}
+                autoCapitalize="none"
+                autoFocus={autoFocus}
+            />
+            {(value.length > 0 || alwaysShowClear) && (
+                <Pressable onPress={handleClear} hitSlop={8} accessibilityLabel="Clear search">
+                    <SymbolView
+                        name={{ ios: 'xmark.circle.fill', android: 'cancel', web: 'cancel' }}
+                        tintColor={iconColor}
+                        size={18}
+                    />
+                </Pressable>
+            )}
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 44,
+        borderRadius: 22,
+        paddingHorizontal: 14,
+        gap: 8,
+    },
+    input: {
+        flex: 1,
+        fontSize: 16,
+        height: '100%',
+        paddingVertical: 0,
+    },
+});
+
+if (__DEV__) {
+    const SearchBarPreview = () => {
+        const [text, setText] = useState('Rick');
+        return (
+            <View style={{ padding: 16, backgroundColor: Colors.light.background }}>
+                <SearchBar value={text} onChangeText={setText} placeholder="Search" />
+            </View>
+        );
+    };
+    preview(<SearchBarPreview />);
+}

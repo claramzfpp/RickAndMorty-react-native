@@ -16,6 +16,9 @@ const BAR_HORIZONTAL_MARGIN = 54;
 const BAR_BOTTOM_MARGIN = 24;
 const PILL_INSET = 6;
 
+/** Espaço que a tab bar flutuante ocupa no rodapé; telas rolaveis devem usar como `paddingBottom` para o fim do conteúdo não ficar embaixo dela. */
+export const TAB_BAR_OCCUPIED_HEIGHT = BAR_HEIGHT + BAR_BOTTOM_MARGIN;
+
 export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];

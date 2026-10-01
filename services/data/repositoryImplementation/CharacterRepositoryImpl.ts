@@ -1,11 +1,13 @@
 import { Character } from '../../domain/model/Character';
 import { CharacterId } from '../../domain/model/CharacterId';
+import { PagedResult } from '../../domain/model/PagedResult';
 import { CharacterRepository } from '../../domain/repository/CharacterRepository';
 import { CharacterMapper } from '../mapper/CharacterMapper';
 import { RMCharacter } from '../remote/characters/RMCharacter';
 import { GetAllCharactersResponse } from '../remote/characters/GetAllCharactersResponse';
 import { HttpError } from '../remote/HttpError';
 import { RICK_AND_MORTY_BASE_URL } from '../remote/ApiConfig';
+import { parseNextPage } from '../pagination/parseNextPage';
 
 export class CharacterRepositoryImpl implements CharacterRepository {
     private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/character`;
@@ -49,8 +51,8 @@ export class CharacterRepositoryImpl implements CharacterRepository {
         return request;
     }
 
-    searchCharacters(name: string): Promise<Character[]> {
-        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=1`;
+    searchCharacters(name: string, page = 1): Promise<PagedResult<Character>> {
+        const url = `${CharacterRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page}`;
 
         return fetch(url)
             .then(response => {
@@ -62,11 +64,14 @@ export class CharacterRepositoryImpl implements CharacterRepository {
                 }
                 return response.json() as Promise<GetAllCharactersResponse>;
             })
-            .then(data => {
+            .then((data): PagedResult<Character> => {
                 if (data === null) {
-                    return [];
+                    return { items: [], nextPage: null };
                 }
-                return data.results.map(CharacterMapper.toDomain);
+                return {
+                    items: data.results.map(CharacterMapper.toDomain),
+                    nextPage: parseNextPage(data.info.next),
+                };
             });
     }
 

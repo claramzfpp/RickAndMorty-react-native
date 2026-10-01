@@ -1,11 +1,13 @@
 import { Location } from '@/services/domain/model/Location';
 import { LocationId } from '@/services/domain/model/LocationId';
+import { PagedResult } from '@/services/domain/model/PagedResult';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
 import { LocationMapper } from '@/services/data/mapper/LocationMapper';
 import { RMLocation } from '@/services/data/remote/locations/RMLocation';
 import { GetAllLocationsResponse } from '@/services/data/remote/locations/GetAllLocationsResponse';
 import { HttpError } from '@/services/data/remote/HttpError';
 import { RICK_AND_MORTY_BASE_URL } from '@/services/data/remote/ApiConfig';
+import { parseNextPage } from '@/services/data/pagination/parseNextPage';
 
 export class LocationRepositoryImpl implements LocationRepository {
     private static readonly baseUrl = `${RICK_AND_MORTY_BASE_URL}/location`;
@@ -49,8 +51,8 @@ export class LocationRepositoryImpl implements LocationRepository {
         return request;
     }
 
-    searchLocationsByName(name: string): Promise<Location[]> {
-        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=1`;
+    searchLocationsByName(name: string, page = 1): Promise<PagedResult<Location>> {
+        const url = `${LocationRepositoryImpl.baseUrl}/?name=${encodeURIComponent(name)}&page=${page}`;
 
         return fetch(url)
             .then(response => {
@@ -62,11 +64,14 @@ export class LocationRepositoryImpl implements LocationRepository {
                 }
                 return response.json() as Promise<GetAllLocationsResponse>;
             })
-            .then(data => {
+            .then((data): PagedResult<Location> => {
                 if (data === null) {
-                    return [];
+                    return { items: [], nextPage: null };
                 }
-                return data.results.map(LocationMapper.toDomain);
+                return {
+                    items: data.results.map(LocationMapper.toDomain),
+                    nextPage: parseNextPage(data.info.next),
+                };
             });
     }
 

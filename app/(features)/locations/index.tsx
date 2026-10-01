@@ -1,16 +1,32 @@
 import { router, Stack } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
+import { useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LocationCard, LocationCellSize } from '@/components/locationsCarousel/LocationCard';
 import { useLocationListViewModel } from '@/components/locationsCarousel/locationListViewModel';
+import { useLocationSearchViewModel } from '@/components/locationsCarousel/locationSearchViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
+import { HeaderSearchButton, headerSearchButtonItem } from '@/components/shared/HeaderSearchButton';
+import { SearchBar } from '@/components/shared/SearchBar';
+import { SearchEmptyState, SearchErrorState, SearchLoadingState } from '@/components/shared/SearchStateViews';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 import { HEADER_CONTENT_HEIGHT, isIOS } from '@/constants/Header';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { Location } from '@/services/domain/model/Location';
 import { getLocationRepository } from '@/services/composition/repositories';
+
+const SEARCH_BAR_HEIGHT = 44;
+
+// Normalized shape of the list/search states, shared by the rendering below.
+type ScreenState =
+  | { status: 'loading' }
+  | { status: 'empty' }
+  | { status: 'error'; message: string }
+  | { status: 'loaded'; items: Location[]; isLoadingMore: boolean; loadMoreError?: string };
 
 export default function LocationsListScreen() {
   const colorScheme = useColorScheme();
@@ -18,7 +34,31 @@ export default function LocationsListScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const contentTopPadding = isIOS ? headerHeight + 16 : 16;
-  const { state, loadMore } = useLocationListViewModel(getLocationRepository());
+  const repository = getLocationRepository();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const openSearch = () => setIsSearchOpen(true);
+  const closeSearch = () => {
+    setQuery('');
+    setIsSearchOpen(false);
+  };
+  const debouncedQuery = useDebouncedValue(query);
+  const isSearching = debouncedQuery.trim() !== '';
+  const list = useLocationListViewModel(repository);
+  const search = useLocationSearchViewModel(repository, debouncedQuery);
+  const loadMore = isSearching ? search.loadMore : list.loadMore;
+
+  // Normalize list/search states into one shape so the rendering below is shared.
+  let view: ScreenState;
+  if (isSearching) {
+    const s = search.state;
+    view = s.status === 'idle' ? { status: 'loading' } : s;
+  } else {
+    const s = list.state;
+    view = s.status === 'loaded'
+      ? { status: 'loaded', items: s.locations, isLoadingMore: s.isLoadingMore, loadMoreError: s.loadMoreError }
+      : s;
+  }
 
   return (
     <View
@@ -30,30 +70,50 @@ export default function LocationsListScreen() {
         },
       ]}
     >
+      {/* `unstable_headerRightItems` (an unstable expo-router API) renders native header items on iOS;
+          `headerRight` is the fallback for platforms that ignore it. Keep both in sync. */}
       <Stack.Screen options={{
         title: '',
         headerTransparent: true,
-        unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
+        headerBackVisible: isSearchOpen ? false : undefined,
+        unstable_headerLeftItems: () => isSearchOpen ? [] : [headerBackButtonItem(() => router.back())],
+        unstable_headerRightItems: () => isSearchOpen ? [] : [headerSearchButtonItem(openSearch)],
+        headerRight: () => isSearchOpen ? null : <HeaderSearchButton onPress={openSearch} />,
       }} />
 
-      {state.status === 'loading' && <ActivityIndicator style={{ marginTop: contentTopPadding }} />}
-      {state.status === 'error' && <Text style={{ marginTop: contentTopPadding }}>{state.message}</Text>}
+      {view.status === 'loading' && <SearchLoadingState topOffset={contentTopPadding} />}
+      {view.status === 'empty' && (
+        <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+          <SearchEmptyState query={debouncedQuery.trim()} subject="Locations" />
+        </View>
+      )}
+      {view.status === 'error' && (
+        isSearching
+          ? (
+            <View style={[styles.stateWrapper, { marginTop: contentTopPadding }]}>
+              <SearchErrorState message={view.message} onRetry={search.retry} />
+            </View>
+          )
+          : <Text style={{ marginTop: contentTopPadding }}>{view.message}</Text>
+      )}
 
-      {state.status === 'loaded' && (
+      {view.status === 'loaded' && (
         <FlatList
-          data={state.locations}
+          data={view.items}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           ListFooterComponent={
-            state.isLoadingMore ? (
+            view.isLoadingMore ? (
               <ActivityIndicator />
-            ) : state.loadMoreError !== undefined ? (
-              <Pressable onPress={loadMore}>
-                <Text>Tentar novamente</Text>
+            ) : view.loadMoreError !== undefined ? (
+              <Pressable onPress={loadMore} accessibilityRole="button" accessibilityLabel="Try again">
+                <Text>Try again</Text>
               </Pressable>
             ) : null
           }
-          keyExtractor={(location) => location.id.value.toString()}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
@@ -67,6 +127,25 @@ export default function LocationsListScreen() {
           )}
         />
       )}
+
+      {/* Floats over the header area (empty while search is open) so the list keeps scrolling under the transparent header. */}
+      {isSearchOpen && (
+        <View
+          style={[
+            styles.searchBar,
+            { top: isIOS ? insets.top : insets.top + (HEADER_CONTENT_HEIGHT - SEARCH_BAR_HEIGHT) / 2 },
+          ]}
+        >
+          <SearchBar
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search locations"
+            onClear={closeSearch}
+            alwaysShowClear
+            autoFocus
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -74,6 +153,17 @@ export default function LocationsListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+  },
+  stateWrapper: {
+    alignSelf: 'stretch',
+    backgroundColor: 'transparent',
   },
   content: {
     gap: 12,
