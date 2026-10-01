@@ -39,6 +39,7 @@ Conventional Commits, small and atomic: `feat:`, `fix:`, `refactor:`. Doc commen
 - Do not install packages or change `package.json`/lockfile without explicit authorization in the spec.
 - Do not touch native project structure (`ios/`, `android/`, plugin config in `app.json`) without authorization.
 - Never read, log, or commit `.env` files, keys, or credentials.
+- Do not change the UI or behavior of existing screens and components. Features add new screens/components; reusing existing ones (import, never edit) is fine.
 - Only modify files listed in the "Allowed files" section of your spec. Shared files (root routes, `repositories.ts`, `package.json`) only if the spec says so.
 - Do not rerun the same failing command (e.g. `tsc`) more than 3x without changing code: stop and analyze.
 - Unclear requirement: state your assumption in one line and proceed; ask only if truly blocked.
