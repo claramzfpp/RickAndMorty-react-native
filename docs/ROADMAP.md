@@ -31,6 +31,8 @@ Allowed files of 01-05 do not overlap: each owns its own folder plus exactly one
 
 ## Known follow-ups (not specs yet)
 
+- Intentional duplication between parallel specs, candidates for a later `refactor:`: info tiles (`components/characters/details/InfoTile.tsx` vs `components/locationsCarousel/details/LocationInfoTile.tsx`), the location `type` -> icon mapping (copied from `LocationCard`), and the details-screen sheet/accent-bar layout.
+
 - The Pencil frame for Season Episodes still shows a number badge and no date; update the design to match the product decision.
 - Episode details and location residents exist in the Pencil file but are not planned.
 - Tests and lint are not set up (study project); see `docs/technical-debt.md`.

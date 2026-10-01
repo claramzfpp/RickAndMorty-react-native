@@ -25,3 +25,12 @@ When done, summarize what you built and any deviation or doubt.
 | `feat/05-card-navigation` | `05-card-navigation` |
 
 Add to the 00 prompt: "`@react-native-async-storage/async-storage` is already installed; do not touch package.json."
+
+## Reviewer prompt (one per PR, separate agent/session)
+
+```
+Review the diff of this branch against main for docs/features/<spec>.md.
+Use docs/review-checklist.md, AGENTS.md and docs/architecture.md.
+Do not modify any file. Report every failed checklist item as
+`file:line - problem - rule`, most severe first, or say that all items pass.
+```
