@@ -17,25 +17,23 @@ export interface DiscoverSearchResultsProps {
     characters: SearchSection<Character>;
     locations: SearchSection<Location>;
     query: string;
-    onRetryCharacters: () => void;
-    onRetryLocations: () => void;
+    onRetry: () => void;
 }
 
 interface SectionProps<T> {
     title: string;
     section: SearchSection<T>;
     query: string;
-    onRetry: () => void;
     numRows?: 1 | 2;
     renderItem: (item: T, index: number) => ReactNode;
 }
 
-const Section = <T,>({ title, section, query, onRetry, numRows, renderItem }: SectionProps<T>) => {
+const Section = <T,>({ title, section, query, numRows, renderItem }: SectionProps<T>) => {
     switch (section.status) {
         case 'loading':
             return <SearchLoadingState />;
         case 'error':
-            return <SearchErrorState message={section.message} onRetry={onRetry} />;
+            return null;
         case 'empty':
             return <SearchEmptyState query={query} />;
         case 'loaded':
@@ -47,11 +45,20 @@ export const DiscoverSearchResults = ({
     characters,
     locations,
     query,
-    onRetryCharacters,
-    onRetryLocations,
+    onRetry,
 }: DiscoverSearchResultsProps) => {
     if (characters.status === 'empty' && locations.status === 'empty') {
         return <SearchEmptyState query={query} />;
+    }
+
+    if (characters.status === 'loading' || locations.status === 'loading') {
+        return <SearchLoadingState />;
+    }
+
+    // A single retry reloads both sections, so one error state covers either failure.
+    const failed = [characters, locations].find((section) => section.status === 'error');
+    if (failed?.status === 'error') {
+        return <SearchErrorState message={failed.message} onRetry={onRetry} />;
     }
 
     return (
@@ -60,7 +67,6 @@ export const DiscoverSearchResults = ({
                 title="Characters"
                 section={characters}
                 query={query}
-                onRetry={onRetryCharacters}
                 renderItem={(character) => (
                     <CharacterCard key={character.id.toString()} character={character} size={CharacterCellSize.Discover} />
                 )}
@@ -69,7 +75,6 @@ export const DiscoverSearchResults = ({
                 title="Locations"
                 section={locations}
                 query={query}
-                onRetry={onRetryLocations}
                 numRows={2}
                 renderItem={(location, index) => (
                     <LocationCard

@@ -19,6 +19,20 @@ const toSection = <T,>(result: PromiseSettledResult<PagedResult<T>>): SearchSect
         : { status: 'loaded', items: result.value.items };
 };
 
+const MAX_RETRIES = 2;
+
+/** Re-runs `request` up to `MAX_RETRIES` more times; the loading state stays up meanwhile. */
+const withRetries = async <T,>(request: () => Promise<T>): Promise<T> => {
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        try {
+            return await request();
+        } catch {
+            // swallowed only to retry; the final attempt below surfaces its error
+        }
+    }
+    return request();
+};
+
 /** First page of each kind only; `query` is expected to be already debounced. */
 export function useDiscoverSearch(
     characterRepository: CharacterRepository,
@@ -28,46 +42,41 @@ export function useDiscoverSearch(
     isSearching: boolean;
     characters: SearchSection<Character>;
     locations: SearchSection<Location>;
-    retryCharacters: () => void;
-    retryLocations: () => void;
+    retry: () => void;
 } {
     const trimmed = query.trim();
     const isSearching = trimmed !== '';
     const [characters, setCharacters] = useState<SearchSection<Character>>(loading);
     const [locations, setLocations] = useState<SearchSection<Location>>(loading);
-    const charactersRequestRef = useRef(0);
-    const locationsRequestRef = useRef(0);
+    const requestRef = useRef(0);
 
-    const loadCharacters = useCallback(async () => {
-        const requestId = ++charactersRequestRef.current;
+    // Sequential on purpose: locations only start after characters settle, and both
+    // sections leave the loading state together.
+    const load = useCallback(async () => {
+        const requestId = ++requestRef.current;
         setCharacters(loading);
-        const [result] = await Promise.allSettled([characterRepository.searchCharacters(trimmed, 1)]);
-        if (requestId === charactersRequestRef.current) setCharacters(toSection(result));
-    }, [characterRepository, trimmed]);
-
-    const loadLocations = useCallback(async () => {
-        const requestId = ++locationsRequestRef.current;
         setLocations(loading);
-        const [result] = await Promise.allSettled([locationRepository.searchLocationsByName(trimmed, 1)]);
-        if (requestId === locationsRequestRef.current) setLocations(toSection(result));
-    }, [locationRepository, trimmed]);
+        const [charactersResult] = await Promise.allSettled([withRetries(() => characterRepository.searchCharacters(trimmed, 1))]);
+        if (requestId !== requestRef.current) return;
+        const [locationsResult] = await Promise.allSettled([withRetries(() => locationRepository.searchLocationsByName(trimmed, 1))]);
+        if (requestId !== requestRef.current) return;
+        setCharacters(toSection(charactersResult));
+        setLocations(toSection(locationsResult));
+    }, [characterRepository, locationRepository, trimmed]);
 
     useEffect(() => {
         if (!isSearching) {
             // invalidate in-flight requests
-            charactersRequestRef.current++;
-            locationsRequestRef.current++;
+            requestRef.current++;
             return;
         }
-        void loadCharacters();
-        void loadLocations();
-    }, [isSearching, loadCharacters, loadLocations]);
+        void load();
+    }, [isSearching, load]);
 
     return {
         isSearching,
         characters,
         locations,
-        retryCharacters: () => { void loadCharacters(); },
-        retryLocations: () => { void loadLocations(); },
+        retry: () => { void load(); },
     };
 }

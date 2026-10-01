@@ -52,8 +52,7 @@ export default function DiscoverView() {
             characters={search.characters}
             locations={search.locations}
             query={debouncedQuery.trim()}
-            onRetryCharacters={search.retryCharacters}
-            onRetryLocations={search.retryLocations}
+            onRetry={search.retry}
           />
         ) : (
           <>
