@@ -1,6 +1,6 @@
 import { router, Stack } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { ActivityIndicator, FlatList, Platform, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
@@ -9,10 +9,8 @@ import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
+import { HEADER_CONTENT_HEIGHT, isIOS } from '@/constants/Header';
 import { getCharacterRepository } from '@/services/composition/repositories';
-
-const HEADER_CONTENT_HEIGHT = 54;
-const isIOS = Platform.OS === 'ios';
 
 export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
