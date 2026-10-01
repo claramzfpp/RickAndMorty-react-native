@@ -1,15 +1,21 @@
 import { router, Stack } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
+import { useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LocationCard, LocationCellSize } from '@/components/locationsCarousel/LocationCard';
 import { useLocationListViewModel } from '@/components/locationsCarousel/locationListViewModel';
+import { useLocationSearchViewModel } from '@/components/locationsCarousel/locationSearchViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
+import { SearchBar } from '@/components/shared/SearchBar';
+import { SearchEmptyState, SearchErrorState, SearchLoadingState } from '@/components/shared/SearchStateViews';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
 import Colors from '@/constants/Colors';
 import { HEADER_CONTENT_HEIGHT, isIOS } from '@/constants/Header';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { Location } from '@/services/domain/model/Location';
 import { getLocationRepository } from '@/services/composition/repositories';
 
 export default function LocationsListScreen() {
@@ -18,7 +24,30 @@ export default function LocationsListScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const contentTopPadding = isIOS ? headerHeight + 16 : 16;
-  const { state, loadMore } = useLocationListViewModel(getLocationRepository());
+  const repository = getLocationRepository();
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebouncedValue(query);
+  const isSearching = debouncedQuery.trim() !== '';
+  const list = useLocationListViewModel(repository);
+  const search = useLocationSearchViewModel(repository, debouncedQuery);
+  const loadMore = isSearching ? search.loadMore : list.loadMore;
+
+  // Normalize list/search states into one shape so the rendering below is shared.
+  type ScreenState =
+    | { status: 'loading' }
+    | { status: 'empty' }
+    | { status: 'error'; message: string }
+    | { status: 'loaded'; items: Location[]; isLoadingMore: boolean; loadMoreError?: string };
+  let view: ScreenState;
+  if (isSearching) {
+    const s = search.state;
+    view = s.status === 'idle' ? { status: 'loading' } : s;
+  } else {
+    const s = list.state;
+    view = s.status === 'loaded'
+      ? { status: 'loaded', items: s.locations, isLoadingMore: s.isLoadingMore, loadMoreError: s.loadMoreError }
+      : s;
+  }
 
   return (
     <View
@@ -36,29 +65,44 @@ export default function LocationsListScreen() {
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
       }} />
 
-      {state.status === 'loading' && <ActivityIndicator style={{ marginTop: contentTopPadding }} />}
-      {state.status === 'error' && <Text style={{ marginTop: contentTopPadding }}>{state.message}</Text>}
+      <View style={[styles.searchBar, { paddingTop: contentTopPadding }]}>
+        <SearchBar
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search locations"
+        />
+      </View>
 
-      {state.status === 'loaded' && (
+      {view.status === 'loading' && <SearchLoadingState />}
+      {view.status === 'empty' && <SearchEmptyState query={debouncedQuery.trim()} />}
+      {view.status === 'error' && (
+        isSearching
+          ? <SearchErrorState message={view.message} onRetry={search.retry} />
+          : <Text>{view.message}</Text>
+      )}
+
+      {view.status === 'loaded' && (
         <FlatList
-          data={state.locations}
+          data={view.items}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           ListFooterComponent={
-            state.isLoadingMore ? (
+            view.isLoadingMore ? (
               <ActivityIndicator />
-            ) : state.loadMoreError !== undefined ? (
+            ) : view.loadMoreError !== undefined ? (
               <Pressable onPress={loadMore}>
                 <Text>Tentar novamente</Text>
               </Pressable>
             ) : null
           }
-          keyExtractor={(location) => location.id.value.toString()}
+          keyExtractor={(item) => item.id.value.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={[
             styles.content,
-            { paddingTop: contentTopPadding, paddingBottom: insets.bottom + 16 },
+            { paddingTop: 12, paddingBottom: insets.bottom + 16 },
           ]}
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
@@ -74,6 +118,10 @@ export default function LocationsListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchBar: {
+    alignSelf: 'stretch',
+    paddingHorizontal: 12,
   },
   content: {
     gap: 12,
