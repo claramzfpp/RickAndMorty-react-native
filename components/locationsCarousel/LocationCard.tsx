@@ -5,9 +5,15 @@ import { AndroidSymbol, SFSymbol, SymbolView } from 'expo-symbols';
 import { preview } from "radon-ide";
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+export const LocationCellSize = {
+    Discover: { width: 160, height: 98 },
+    Grid: { width: 189, height: 110 }, 
+} as const;
+
 export interface LocationCardProps {
     location: Location;
     index: number,
+    size: typeof LocationCellSize[keyof typeof LocationCellSize];
     onPress?: () => void;
 }
 
@@ -63,12 +69,13 @@ const headerIcon = ({ type }: { type: string }): { ios: SFSymbol, android: Andro
     }
 }
 
-export const LocationCard = ({ location, index, onPress }: LocationCardProps) => {
+export const LocationCard = ({ location, index, onPress, size }: LocationCardProps) => {
     return (
         <Pressable
             onPress={onPress}
             style={({ pressed }) => [
                 styles.container,
+                size,
                 { backgroundColor: "rgb(211, 211, 211)" },
                 pressed && styles.pressed,
             ]}
@@ -88,8 +95,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 15,
         justifyContent: 'center',
-        width: 160,
-        height: 98,
     },
     name: {
         fontSize: 15,
@@ -111,7 +116,7 @@ if (__DEV__) {
     preview(
         <View style={{ padding: 16, gap: 12, flexDirection: 'row', flexWrap: 'wrap' }}>
             {mockLocations.map((location, index) => (
-                <LocationCard key={location.id.toString()} location={location} index={index} />
+                <LocationCard key={location.id.toString()} location={location} index={index} size={LocationCellSize.Discover} />
             ))}
         </View>
     );

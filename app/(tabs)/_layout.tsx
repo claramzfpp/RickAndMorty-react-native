@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router/js-tabs';
 import { SymbolView } from 'expo-symbols';
 
-import CustomTabBar from '@/components/shared/CustomTabBar';
+import { CustomTabBar } from '@/components/shared/CustomTabBar';
 
 export default function TabLayout() {
   return (

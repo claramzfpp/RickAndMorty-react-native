@@ -6,7 +6,7 @@ import { CharacterFooter } from './CharacterFooter';
 
 export const CharacterCellSize = {
   Discover: { width: 140, height: 212 },
-  Grid: { width: 169, height: 215 },
+  Grid: { width: 189, height: 235 },
 } as const;
 
 export interface CharacterCellProps {

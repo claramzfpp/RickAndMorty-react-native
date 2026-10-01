@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
 import { SeasonEpisodesCarousel } from '@/components/season+episodes/SeasonEpisodesCarousel';
@@ -11,6 +12,7 @@ import { getCharacterRepository, getEpisodeRepository, getLocationRepository } f
 export default function DiscoverView() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+  const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.gray }]}>
@@ -23,12 +25,12 @@ export default function DiscoverView() {
 
       <CharactersCarousel
         characterRepository={getCharacterRepository()}
-        onSeeAllClick={() => console.log("clickTest")}
+        onSeeAllClick={() => router.push('/characters')}
       />
 
       <LocationCarousel
         locationRepository={getLocationRepository()}
-        onSeeAllClick={() => console.log("clickTest")}
+        onSeeAllClick={() => router.push('/locations')}
       />
 
     </View>

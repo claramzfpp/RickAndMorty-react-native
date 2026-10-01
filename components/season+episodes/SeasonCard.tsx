@@ -2,15 +2,6 @@ import Colors from '@/constants/Colors';
 import { preview } from "radon-ide";
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-// o nome desse padrão é Container/View Pattern, 
-// que é uma abordagem comum no desenvolvimento de aplicativos React Native. 
-//
-// A ideia é separar a lógica de apresentação (View) da lógica de negócios (Container). 
-// O componente Container é responsável por gerenciar o estado, buscar dados e lidar com eventos, 
-// enquanto o componente View é responsável por renderizar a interface do usuário com base 
-// nos dados fornecidos pelo Container. 
-// Isso promove uma melhor organização do código, facilita a manutenção e 
-// permite a reutilização de componentes em diferentes partes do aplicativo.
 export interface SeasonCardProps {
     season: {
         number: number;
@@ -32,9 +23,6 @@ const headerComponent = ({ seasonNumber }: { seasonNumber: number }) => {
     );
 }
 
-// a diferença entre 'export const' e 'export default'
-// 'export const' permite exportar múltiplos componentes ou funções do mesmo arquivo, e a nomeação deve ser feita explicitamente ao importar, 
-// enquanto 'export default' permite exportar apenas um componente ou função como padrão.
 export const SeasonCard = ({ season, onPress }: SeasonCardProps) => {
     const noDetailsAvailable = (season.number > 5)
 
@@ -61,10 +49,6 @@ export const SeasonCard = ({ season, onPress }: SeasonCardProps) => {
     );
 };
 
-// isso promove que a view seja independente de layout, 
-// e que o container seja independente de estilo, promovendo a reutilização de componentes 
-// e a separação de responsabilidades.
-// acredito que isso seja o modifier deles
 const styles = StyleSheet.create({
     container: {
         alignItems: 'flex-start',
