@@ -1,9 +1,9 @@
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CharacterCard, CharacterCellSize } from '@/components/characters/CharacterCard';
-import { useCharacterCarouselViewModel } from '@/components/characters/charactersCarousel/characterCarouselViewModel';
+import { useCharacterListViewModel } from '@/components/characters/charactersCarousel/characterListViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
 import { Text, View } from '@/components/shared/Themed';
 import { useColorScheme } from '@/components/shared/useColorScheme';
@@ -16,7 +16,7 @@ export default function CharactersListScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const state = useCharacterCarouselViewModel(getCharacterRepository());
+  const { state, loadMore } = useCharacterListViewModel(getCharacterRepository());
 
   return (
     <View
@@ -36,7 +36,18 @@ export default function CharactersListScreen() {
 
       {state.status === 'loaded' && (
         <FlatList
-          data={state.charactersArray}
+          data={state.characters}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            state.isLoadingMore ? (
+              <ActivityIndicator />
+            ) : state.loadMoreError !== undefined ? (
+              <Pressable onPress={loadMore}>
+                <Text>Tentar novamente</Text>
+              </Pressable>
+            ) : null
+          }
           keyExtractor={(character) => character.id.value.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
