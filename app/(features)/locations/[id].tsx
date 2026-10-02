@@ -1,28 +1,22 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
 
+import { LocationDetailsView } from '@/components/locationsCarousel/details/LocationDetailsView';
+import { useLocationDetailsViewModel } from '@/components/locationsCarousel/details/locationDetailsViewModel';
 import { headerBackButtonItem } from '@/components/shared/HeaderBackButton';
-import { Text, View } from '@/components/shared/Themed';
+import { getLocationRepository } from '@/services/composition/repositories';
 
 export default function LocationDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { state, retry } = useLocationDetailsViewModel(getLocationRepository(), id);
 
   return (
-    <View style={styles.container}>
+    <>
       <Stack.Screen options={{
         title: '',
         headerTransparent: true,
         unstable_headerLeftItems: () => [headerBackButtonItem(() => router.back())],
       }} />
-      <Text>{id}</Text>
-    </View>
+      <LocationDetailsView state={state} onRetry={retry} />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
