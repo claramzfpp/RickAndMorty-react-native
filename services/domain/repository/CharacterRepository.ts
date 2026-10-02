@@ -10,4 +10,6 @@ export interface CharacterRepository {
     searchCharacters(name: string, page?: number): Promise<PagedResult<Character>>;
     // rejects if no character matches the provided id
     getCharacterById(id: CharacterId): Promise<Character>;
+    // resolves to [] for an empty list without any request; ids unknown to the API are omitted
+    getCharactersByIds(ids: CharacterId[]): Promise<Character[]>;
 }
