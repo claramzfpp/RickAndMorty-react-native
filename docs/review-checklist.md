@@ -6,7 +6,7 @@ Report each failed item as `file:line - what is wrong - what the rule says`. Do 
 
 ## 1. Scope
 
-- [ ] `git diff --stat main` touches only files listed under the spec's **Allowed files**.
+- [ ] `git diff --stat develop` touches only files listed under the spec's **Allowed files**.
 - [ ] No edit to an existing screen or component unless the spec allows it (spec 05 only, `onPress` additions).
 - [ ] `package.json`, `package-lock.json`, `app.json`, `ios/`, `android/` untouched.
 - [ ] No test files, snapshot files, or test libraries.

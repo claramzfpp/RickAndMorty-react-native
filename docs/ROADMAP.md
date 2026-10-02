@@ -15,8 +15,8 @@ For the human orchestrating agents (e.g. in Orca). Agents do not need this file.
 
 ## Phases
 
-1. **Phase 0 (alone):** run 00, review, merge to `main`. Rebuild the dev client (new native module).
-2. **Phase 1 (parallel, 5 worktrees):** create worktrees from the updated `main`, one agent each for 01, 02, 03, 04, 05. Each is its own PR. Merge 05 early: it is tiny, and without it no card opens the new screens, so manual testing of 01-03 needs it.
+1. **Phase 0 (alone):** run 00, review, merge to `develop`. Rebuild the dev client (new native module).
+2. **Phase 1 (parallel, 5 worktrees):** create worktrees from the updated `develop`, one agent each for 01, 02, 03, 04, 05. Each is its own PR. Merge 05 early: it is tiny, and without it no card opens the new screens, so manual testing of 01-03 needs it.
 3. **Final check (you, manual):** all UI and behavior checks, e.g. favorite in 02, see it in 04, restart the app, confirm persistence. Fix visual inconsistencies by hand.
 
 ## Decisions

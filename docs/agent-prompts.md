@@ -1,6 +1,6 @@
 # Agent prompts
 
-Paste one per agent/worktree. Create each worktree from an up-to-date `main` (after 00 is merged, for 01-04).
+Paste one per agent/worktree. Create each worktree from an up-to-date `develop` (after 00 is merged, for 01-04).
 
 ## Template
 
@@ -29,7 +29,7 @@ Add to the 00 prompt: "`@react-native-async-storage/async-storage` is already in
 ## Reviewer prompt (one per PR, separate agent/session)
 
 ```
-Review the diff of this branch against main for docs/features/<spec>.md.
+Review the diff of this branch against develop for docs/features/<spec>.md.
 Use docs/review-checklist.md, AGENTS.md and docs/architecture.md.
 Do not modify any file. Report every failed checklist item as
 `file:line - problem - rule`, most severe first, or say that all items pass.
