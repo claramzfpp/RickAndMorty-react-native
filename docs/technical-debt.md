@@ -112,7 +112,7 @@ Extrair o bloco para um view model genérico depois do item 3, para servir às d
 
 ---
 
-## 3. `loadAllEpisodes()` sem guarda de concorrência
+## 6. `loadAllEpisodes()` sem guarda de concorrência
 
 - **Origem:** revisão dos specs de feature.
 - **Prioridade:** baixa.
