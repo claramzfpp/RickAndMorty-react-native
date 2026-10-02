@@ -130,3 +130,13 @@ Extrair o bloco para um view model genérico depois do item 3, para servir às d
 
 Durante a troca de view, foi identificado que um background branco aparece, sendo mais claro durante os testes em android do que em ios. necessário pesquisar possíveis origens e entender como podemos arrumar o problema.
 
+---
+
+## 8. Botão dentro da custom bar - color
+
+- **Origem:** testagem manual 
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+Temos que trocar a cor do icon não selecionado da CustomTabBar, a cor atual fica escondida por conta dos cards de location. Quando pesquisamos um character/location, o ico9n aparece tranquilamente, provavelmente só precisamos deixalo um pouco mais escuro.
+
