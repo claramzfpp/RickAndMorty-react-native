@@ -139,3 +139,23 @@ Durante a troca de view, foi identificado que um background branco aparece, send
 - **Status:** aberto.
 
 Temos que trocar a cor do icon não selecionado da CustomTabBar, a cor atual fica escondida por conta dos cards de location. Quando pesquisamos um character/location, o ico9n aparece tranquilamente, provavelmente só precisamos deixalo um pouco mais escuro.
+
+---
+
+## 9. Minor — duplicated icon-shape type (unchanged from previous review)
+
+- **Origem:** git hub review
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+components/locationsCarousel/details/LocationInfoTile.tsx:7 and the heroIcon return type in components/locationsCarousel/details/LocationDetailsView.tsx:15 both inline { ios: SFSymbol; android: AndroidSymbol; web: AndroidSymbol }, a shape already duplicated a third time in LocationCard.tsx:33. A shared PlatformSymbol type alias would remove the triplication next time one of these files is touched. Not blocking — already flagged as tech debt in the PR description.
+
+---
+
+## 10. Worth confirming — "unknown" fallback vs. spec wording (unchanged from previous review)
+
+- **Origem:** git hub review
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+displayValue (LocationDetailsView.tsx:31) maps any empty/whitespace field to the literal string "unknown", so a genuinely empty API field becomes visually indistinguishable from an API-provided "unknown" value. Reasonable interpretation, but worth a design/product sign-off since the spec's "sometimes unknown" note was describing real API data, not prescribing this fallback text.
