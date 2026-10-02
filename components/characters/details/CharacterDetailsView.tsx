@@ -7,7 +7,7 @@ import Colors from '@/constants/Colors';
 import { CharacterDetailsUIState } from './characterDetailsUIState';
 import { InfoTile } from './InfoTile';
 
-const HERO_HEIGHT = 340;
+const HERO_HEIGHT = 440;
 const SHEET_OVERLAP = 24;
 
 export interface CharacterDetailsViewProps {
