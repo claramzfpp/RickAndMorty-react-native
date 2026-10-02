@@ -1,5 +1,6 @@
 import { GenericCarousel } from '@/components/shared/GenericCarousel';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
+import { router } from 'expo-router';
 import { ActivityIndicator, Text } from 'react-native';
 import { LocationCard, LocationCellSize } from './LocationCard';
 import { useLocationCarouselViewModel } from './locationCarouselViewModel';
@@ -36,6 +37,7 @@ export const LocationCarousel = ({
                             location={location}
                             index={index}
                             size={LocationCellSize.Discover}
+                            onPress={() => router.push(`/locations/${location.id.value}`)}
                         />
                     ))}
                 </>
