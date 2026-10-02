@@ -119,3 +119,43 @@ Extrair o bloco para um view model genérico depois do item 3, para servir às d
 - **Status:** aberto.
 
 [EpisodeRepositoryImpl.ts](../services/data/repositoryImplementation/EpisodeRepositoryImpl.ts) concatena os episódios a cada chamada e não tem o guard `inFlight` dos outros repositórios. Duas chamadas simultâneas (ou repetidas) duplicam a lista. Hoje os view models só chamam quando `episodes` está vazio, o que evita o problema na prática. Correção futura: reaproveitar a promise em andamento e ignorar chamadas quando já carregou.
+
+---
+
+## 7. Background branco na passagem de tela (ex: discover -> see all) 
+
+- **Origem:** testagem manual 
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+Durante a troca de view, foi identificado que um background branco aparece, sendo mais claro durante os testes em android do que em ios. necessário pesquisar possíveis origens e entender como podemos arrumar o problema.
+
+---
+
+## 8. Botão dentro da custom bar - color
+
+- **Origem:** testagem manual 
+- **Prioridade:** baixa.
+- **Status:** aberto.
+
+Temos que trocar a cor do icon não selecionado da CustomTabBar, a cor atual fica escondida por conta dos cards de location. Quando pesquisamos um character/location, o ico9n aparece tranquilamente, provavelmente só precisamos deixalo um pouco mais escuro.
+
+---
+
+## 9. Minor — duplicated icon-shape type (unchanged from previous review)
+
+- **Origem:** git hub review
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+components/locationsCarousel/details/LocationInfoTile.tsx:7 and the heroIcon return type in components/locationsCarousel/details/LocationDetailsView.tsx:15 both inline { ios: SFSymbol; android: AndroidSymbol; web: AndroidSymbol }, a shape already duplicated a third time in LocationCard.tsx:33. A shared PlatformSymbol type alias would remove the triplication next time one of these files is touched. Not blocking — already flagged as tech debt in the PR description.
+
+---
+
+## 10. Worth confirming — "unknown" fallback vs. spec wording (unchanged from previous review)
+
+- **Origem:** git hub review
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+displayValue (LocationDetailsView.tsx:31) maps any empty/whitespace field to the literal string "unknown", so a genuinely empty API field becomes visually indistinguishable from an API-provided "unknown" value. Reasonable interpretation, but worth a design/product sign-off since the spec's "sometimes unknown" note was describing real API data, not prescribing this fallback text.
