@@ -123,7 +123,11 @@ export default function CharactersListScreen() {
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <CharacterCard character={item} size={CharacterCellSize.Grid} />
+            <CharacterCard
+              character={item}
+              size={CharacterCellSize.Grid}
+              onPress={() => router.push(`/characters/${item.id.value}`)}
+            />
           )}
         />
       )}

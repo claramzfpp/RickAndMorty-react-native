@@ -123,7 +123,12 @@ export default function LocationsListScreen() {
           scrollIndicatorInsets={isIOS ? { top: headerHeight } : undefined}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
-            <LocationCard location={item} index={index} size={LocationCellSize.Grid} />
+            <LocationCard
+              location={item}
+              index={index}
+              size={LocationCellSize.Grid}
+              onPress={() => router.push(`/locations/${item.id.value}`)}
+            />
           )}
         />
       )}

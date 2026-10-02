@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 import { Character } from '@/services/domain/model/Character';
@@ -69,7 +70,12 @@ export const DiscoverSearchResults = ({
                 query={query}
                 onRetry={onRetry}
                 renderItem={(character) => (
-                    <CharacterCard key={character.id.toString()} character={character} size={CharacterCellSize.Discover} />
+                    <CharacterCard
+                        key={character.id.toString()}
+                        character={character}
+                        size={CharacterCellSize.Discover}
+                        onPress={() => router.push(`/characters/${character.id.value}`)}
+                    />
                 )}
             />
             <Section
@@ -84,6 +90,7 @@ export const DiscoverSearchResults = ({
                         location={location}
                         index={index}
                         size={LocationCellSize.Discover}
+                        onPress={() => router.push(`/locations/${location.id.value}`)}
                     />
                 )}
             />
