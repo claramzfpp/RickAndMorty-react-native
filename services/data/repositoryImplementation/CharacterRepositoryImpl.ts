@@ -87,4 +87,30 @@ export class CharacterRepositoryImpl implements CharacterRepository {
             })
             .then(CharacterMapper.toDomain);
     }
+
+    async getCharactersByIds(ids: CharacterId[]): Promise<Character[]> {
+        const uniqueValues = Array.from(new Set(ids.map(id => id.value)));
+        if (uniqueValues.length === 0) {
+            return [];
+        }
+
+        const response = await fetch(`${CharacterRepositoryImpl.baseUrl}/${uniqueValues.join(',')}`);
+        if (response.status === 404) {
+            return [];
+        }
+        if (!response.ok) {
+            throw new HttpError(response.status);
+        }
+
+        // The API returns a bare object (not an array) when a single id is requested.
+        const data = (await response.json()) as RMCharacter | RMCharacter[];
+        const characters = (Array.isArray(data) ? data : [data]).map(CharacterMapper.toDomain);
+
+        // The API sorts by id and ignores the requested order, so restore it here.
+        const byId = new Map(characters.map(character => [character.id.value, character]));
+        return uniqueValues.flatMap(value => {
+            const character = byId.get(value);
+            return character === undefined ? [] : [character];
+        });
+    }
 }

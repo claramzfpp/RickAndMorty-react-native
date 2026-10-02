@@ -4,6 +4,8 @@ import { CharacterRepository } from '@/services/domain/repository/CharacterRepos
 import { CharacterRepositoryImpl } from '@/services/data/repositoryImplementation/CharacterRepositoryImpl';
 import { LocationRepository } from '@/services/domain/repository/LocationRepository';
 import { LocationRepositoryImpl } from '@/services/data/repositoryImplementation/LocationRepositoryImpl';
+import { FavoritesRepository } from '@/services/domain/repository/FavoritesRepository';
+import { FavoritesRepositoryImpl } from '@/services/data/repositoryImplementation/FavoritesRepositoryImpl';
 
 let episodeRepositoryInstance: EpisodeRepository | undefined;
 
@@ -30,4 +32,13 @@ export function getLocationRepository(): LocationRepository {
         locationRepositoryInstance = new LocationRepositoryImpl();
     }
     return locationRepositoryInstance;
+}
+
+let favoritesRepositoryInstance: FavoritesRepository | undefined;
+
+export function getFavoritesRepository(): FavoritesRepository {
+    if (favoritesRepositoryInstance === undefined) {
+        favoritesRepositoryInstance = new FavoritesRepositoryImpl();
+    }
+    return favoritesRepositoryInstance;
 }
