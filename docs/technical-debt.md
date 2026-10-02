@@ -119,3 +119,14 @@ Extrair o bloco para um view model genérico depois do item 3, para servir às d
 - **Status:** aberto.
 
 [EpisodeRepositoryImpl.ts](../services/data/repositoryImplementation/EpisodeRepositoryImpl.ts) concatena os episódios a cada chamada e não tem o guard `inFlight` dos outros repositórios. Duas chamadas simultâneas (ou repetidas) duplicam a lista. Hoje os view models só chamam quando `episodes` está vazio, o que evita o problema na prática. Correção futura: reaproveitar a promise em andamento e ignorar chamadas quando já carregou.
+
+---
+
+## 7. Background branco na passagem de tela (ex: discover -> see all) 
+
+- **Origem:** testagem manual 
+- **Prioridade:** alta.
+- **Status:** aberto.
+
+Durante a troca de view, foi identificado que um background branco aparece, sendo mais claro durante os testes em android do que em ios. necessário pesquisar possíveis origens e entender como podemos arrumar o problema.
+
