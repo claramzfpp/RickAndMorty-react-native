@@ -139,4 +139,3 @@ Durante a troca de view, foi identificado que um background branco aparece, send
 - **Status:** aberto.
 
 Temos que trocar a cor do icon não selecionado da CustomTabBar, a cor atual fica escondida por conta dos cards de location. Quando pesquisamos um character/location, o ico9n aparece tranquilamente, provavelmente só precisamos deixalo um pouco mais escuro.
-
