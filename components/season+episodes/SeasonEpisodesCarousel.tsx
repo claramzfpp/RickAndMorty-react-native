@@ -1,5 +1,6 @@
 import { GenericCarousel } from '@/components/shared/GenericCarousel';
 import { EpisodeRepository } from '@/services/domain/repository/EpisodeRepository';
+import { router } from 'expo-router';
 import { ActivityIndicator, Text } from 'react-native';
 import { SeasonCard } from './SeasonCard';
 import { useSeasonEpisodesViewModel } from './seasonViewModel';
@@ -41,6 +42,7 @@ export const SeasonEpisodesCarousel = ({
                                 number: seasonNumber,
                                 episodesNumber: state.episodeCountsBySeason[seasonNumber] ?? 0,
                             }}
+                            onPress={() => router.push(`/seasons/${seasonNumber}`)}
                         />
                     ))}
                 </>

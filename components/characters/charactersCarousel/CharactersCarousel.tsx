@@ -1,5 +1,6 @@
 import { GenericCarousel } from '@/components/shared/GenericCarousel';
 import { CharacterRepository } from '@/services/domain/repository/CharacterRepository';
+import { router } from 'expo-router';
 import { ActivityIndicator, Text } from 'react-native';
 import { CharacterCard, CharacterCellSize } from '../CharacterCard';
 import { useCharacterCarouselViewModel } from './characterCarouselViewModel';
@@ -34,6 +35,7 @@ export const CharactersCarousel = ({
                             key={character.id.value}
                             character={character}
                             size={CharacterCellSize.Discover}
+                            onPress={() => router.push(`/characters/${character.id.value}`)}
                         />
                     ))}
                 </>
